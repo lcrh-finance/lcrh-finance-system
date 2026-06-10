@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LCRH Finance System</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LCRH Finance System v2</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -11,186 +11,206 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --navy:#0B2545;--navy2:#163A6B;--gold:#C8960A;--gold-lt:#FDF3D0;
-  --white:#FFFFFF;--gray50:#F7F8FA;--gray100:#EDEEF1;--gray300:#C4C6CD;
-  --gray500:#7A7D87;--gray700:#3C3E47;
-  --green:#0F6E56;--green-lt:#E1F5EE;--red:#A32D2D;--red-lt:#FCEBEB;
-  --blue:#185FA5;--blue-lt:#E6F1FB;--amber:#854F0B;--amber-lt:#FAEEDA;
-  --radius:8px;--radius-lg:12px;--sidebar:220px;--header:56px;
+  --white:#fff;--g50:#F7F8FA;--g100:#EDEEF1;--g300:#C4C6CD;--g500:#7A7D87;--g700:#3C3E47;
+  --green:#0F6E56;--glt:#E1F5EE;--red:#A32D2D;--rlt:#FCEBEB;
+  --blue:#185FA5;--blt:#E6F1FB;--amber:#854F0B;--alt:#FAEEDA;
+  --r:8px;--rl:12px;--sb:220px;--hh:56px;
 }
-html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:var(--gray700);background:var(--gray50)}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:var(--g700);background:var(--g50)}
+/* AUTH */
 #auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--navy),var(--navy2))}
-.auth-card{background:var(--white);border-radius:var(--radius-lg);padding:40px 36px;width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
-.auth-logo{text-align:center;margin-bottom:24px}
-.logo-badge{width:52px;height:52px;border-radius:12px;background:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;font-weight:700;color:var(--gold)}
-.auth-logo h1{font-size:16px;font-weight:700;color:var(--navy)}
-.auth-logo p{font-size:11px;color:var(--gray500);margin-top:2px}
-.auth-tabs{display:flex;border-bottom:2px solid var(--gray100);margin-bottom:20px}
-.auth-tab{flex:1;padding:8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray500);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s}
-.auth-tab.active{color:var(--navy);border-bottom-color:var(--gold)}
-.auth-panel{display:none}.auth-panel.active{display:block}
-.fg{margin-bottom:14px}
-.fg label{display:block;font-size:11px;font-weight:700;color:var(--gray700);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select{width:100%;padding:8px 11px;border:1.5px solid var(--gray300);border-radius:var(--radius);font-size:13px;outline:none;transition:border-color .2s;background:var(--white);color:var(--gray700)}
+.ac{background:var(--white);border-radius:var(--rl);padding:38px 34px;width:380px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.alo{text-align:center;margin-bottom:22px}
+.alb{width:50px;height:50px;border-radius:11px;background:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:18px;font-weight:700;color:var(--gold)}
+.alo h1{font-size:15px;font-weight:700;color:var(--navy)}
+.alo p{font-size:11px;color:var(--g500);margin-top:2px}
+.atabs{display:flex;border-bottom:2px solid var(--g100);margin-bottom:18px}
+.atab{flex:1;padding:8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:var(--g500);border-bottom:2px solid transparent;margin-bottom:-2px}
+.atab.active{color:var(--navy);border-bottom-color:var(--gold)}
+.apanel{display:none}.apanel.active{display:block}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--g700);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;outline:none;transition:border-color .2s;background:var(--white);color:var(--g700)}
 .fg input:focus,.fg select:focus{border-color:var(--navy)}
-.btn-primary{width:100%;padding:11px;background:var(--navy);color:var(--white);border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
-.btn-primary:hover{background:var(--navy2)}
-.auth-error{font-size:12px;color:var(--red);margin-top:8px;text-align:center;min-height:16px}
-.cfg-note{margin-top:14px;padding:12px;background:var(--amber-lt);border-radius:var(--radius);border-left:3px solid var(--gold);font-size:12px;color:var(--amber);line-height:1.5}
+.bprimary{width:100%;padding:10px;background:var(--navy);color:var(--white);border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer}
+.bprimary:hover{background:var(--navy2)}
+.aerr{font-size:12px;color:var(--red);margin-top:7px;text-align:center;min-height:16px}
+.cnote{margin-top:12px;padding:11px;background:var(--alt);border-radius:var(--r);border-left:3px solid var(--gold);font-size:12px;color:var(--amber);line-height:1.5}
+/* APP */
 #app{display:none;height:100vh;overflow:hidden}
 #app.visible{display:flex}
-.sidebar{width:var(--sidebar);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
-.sb-head{padding:14px 12px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
-.sb-logo{display:flex;align-items:center;gap:10px}
-.sb-badge{width:32px;height:32px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--navy);flex-shrink:0}
-.sb-name{color:var(--white);font-size:12px;font-weight:700;line-height:1.3}
-.sb-sub{color:rgba(255,255,255,.4);font-size:10px}
-.nav-section{padding:10px 8px 4px}
-.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;padding:0 6px 5px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);color:rgba(255,255,255,.65);font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:2px}
-.nav-item:hover{background:rgba(255,255,255,.07);color:var(--white)}
-.nav-item.active{background:var(--gold);color:var(--navy);font-weight:600}
-.sb-foot{margin-top:auto;padding:10px 8px;border-top:1px solid rgba(255,255,255,.08)}
-.user-chip{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:pointer}
-.user-chip:hover{background:rgba(255,255,255,.07)}
-.u-avatar{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
-.u-name{color:var(--white);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.u-role{color:rgba(255,255,255,.4);font-size:10px}
-.logout-btn{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:15px;padding:2px}
-.logout-btn:hover{color:var(--white)}
+.sidebar{width:var(--sb);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sbh{padding:13px 11px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sbl{display:flex;align-items:center;gap:9px}
+.sbb{width:30px;height:30px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--navy);flex-shrink:0}
+.sbn{color:var(--white);font-size:12px;font-weight:700;line-height:1.3}
+.sbs{color:rgba(255,255,255,.4);font-size:10px}
+.ns{padding:9px 7px 3px}
+.nl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px;text-transform:uppercase;padding:0 6px 5px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r);color:rgba(255,255,255,.65);font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:2px}
+.ni:hover{background:rgba(255,255,255,.07);color:var(--white)}
+.ni.active{background:var(--gold);color:var(--navy);font-weight:600}
+.sbft{margin-top:auto;padding:9px 7px;border-top:1px solid rgba(255,255,255,.08)}
+.uc{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r)}
+.uc:hover{background:rgba(255,255,255,.07)}
+.uav{width:27px;height:27px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
+.unm{color:var(--white);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.url{color:rgba(255,255,255,.4);font-size:10px}
+.lob{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;padding:2px}
+.lob:hover{color:var(--white)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{height:var(--header);background:var(--white);border-bottom:1px solid var(--gray100);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
-.topbar h2{font-size:16px;font-weight:700;color:var(--navy);flex:1}
-.topbar-date{font-size:12px;color:var(--gray500)}
-.content{flex:1;overflow-y:auto;padding:24px}
+.topbar{height:var(--hh);background:var(--white);border-bottom:1px solid var(--g100);display:flex;align-items:center;padding:0 22px;gap:14px;flex-shrink:0}
+.topbar h2{font-size:15px;font-weight:700;color:var(--navy);flex:1}
+.tbd{font-size:12px;color:var(--g500)}
+.content{flex:1;overflow-y:auto;padding:22px}
 .page{display:none}.page.active{display:block}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
-.kpi-card{background:var(--white);border-radius:var(--radius-lg);padding:14px 16px;border:1px solid var(--gray100)}
-.kpi-label{font-size:11px;font-weight:700;color:var(--gray500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.kpi-value{font-size:20px;font-weight:700;color:var(--navy)}
-.kpi-value.green{color:var(--green)}.kpi-value.red{color:var(--red)}.kpi-value.gold{color:var(--gold)}.kpi-value.blue{color:var(--blue)}
-.kpi-sub{font-size:11px;color:var(--gray500);margin-top:3px}
-.sc{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--gray100);margin-bottom:18px}
-.sc-head{display:flex;align-items:center;padding:13px 18px;border-bottom:1px solid var(--gray100);gap:10px;flex-wrap:wrap}
-.sc-head h3{font-size:14px;font-weight:700;color:var(--navy);flex:1}
-.sc-body{padding:16px 18px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
-.form-grid.g3{grid-template-columns:1fr 1fr 1fr}
-.form-grid.g1{grid-template-columns:1fr}
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:20px}
+.kcard{background:var(--white);border-radius:var(--rl);padding:13px 15px;border:1px solid var(--g100)}
+.klbl{font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kval{font-size:19px;font-weight:700;color:var(--navy)}
+.kval.gn{color:var(--green)}.kval.rd{color:var(--red)}.kval.gd{color:var(--gold)}.kval.bl{color:var(--blue)}
+.ksub{font-size:11px;color:var(--g500);margin-top:3px}
+/* Cards */
+.sc{background:var(--white);border-radius:var(--rl);border:1px solid var(--g100);margin-bottom:16px}
+.sch{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--g100);gap:9px;flex-wrap:wrap}
+.sch h3{font-size:13px;font-weight:700;color:var(--navy);flex:1}
+.scb{padding:14px 16px}
+/* Forms */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:11px 16px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px 16px}
+.fg1{display:grid;grid-template-columns:1fr;gap:11px}
 .fr{display:flex;flex-direction:column;gap:4px}
 .fr.s2{grid-column:span 2}.fr.s3{grid-column:span 3}
-.fr label{font-size:11px;font-weight:700;color:var(--gray700);text-transform:uppercase;letter-spacing:.4px}
-.fr input,.fr select,.fr textarea{padding:7px 10px;border:1.5px solid var(--gray300);border-radius:var(--radius);font-size:13px;outline:none;transition:border-color .2s;background:var(--white);color:var(--gray700);font-family:inherit}
+.fr label{font-size:11px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.4px}
+.fr input,.fr select,.fr textarea{padding:7px 9px;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;outline:none;transition:border-color .2s;background:var(--white);color:var(--g700);font-family:inherit}
 .fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--navy)}
-.fr textarea{resize:vertical;min-height:65px}
-.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
-.btn{padding:7px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.btn-navy{background:var(--navy);color:var(--white);border-color:var(--navy)}.btn-navy:hover{background:var(--navy2)}
-.btn-ghost{background:transparent;color:var(--navy);border-color:var(--gray300)}.btn-ghost:hover{border-color:var(--navy);background:var(--gray50)}
-.btn-danger{background:var(--red-lt);color:var(--red);border-color:var(--red)}.btn-danger:hover{background:var(--red);color:var(--white)}
-.btn-sm{padding:5px 11px;font-size:12px}
-.btn-icon{padding:5px;min-width:28px;justify-content:center}
+.fr textarea{resize:vertical;min-height:60px}
+.fax{display:flex;gap:9px;justify-content:flex-end;margin-top:14px}
+/* Buttons */
+.btn{padding:7px 15px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.bnn{background:var(--navy);color:var(--white);border-color:var(--navy)}.bnn:hover{background:var(--navy2)}
+.bgh{background:transparent;color:var(--navy);border-color:var(--g300)}.bgh:hover{border-color:var(--navy);background:var(--g50)}
+.bdr{background:var(--rlt);color:var(--red);border-color:var(--red)}.bdr:hover{background:var(--red);color:var(--white)}
+.bsm{padding:5px 10px;font-size:12px}
+.bic{padding:5px;min-width:26px;justify-content:center}
+/* Table */
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{background:var(--gray50);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;color:var(--gray500);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--gray100);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--gray100);transition:background .1s}
-tbody tr:hover{background:var(--gray50)}
+thead th{background:var(--g50);padding:7px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--g100);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--g100);transition:background .1s}
+tbody tr:hover{background:var(--g50)}
 tbody tr:last-child{border-bottom:none}
-td{padding:8px 11px;color:var(--gray700);vertical-align:middle}
-td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:'Consolas',monospace;font-size:13px}
+td{padding:7px 10px;color:var(--g700);vertical-align:middle}
+td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:Consolas,monospace;font-size:13px}
 td.bold{font-weight:700;color:var(--navy)}
-tfoot td{font-weight:700;color:var(--navy);border-top:2px solid var(--navy);padding-top:9px}
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
-.bg{background:var(--green-lt);color:var(--green)}
-.br{background:var(--red-lt);color:var(--red)}
-.bb{background:var(--blue-lt);color:var(--blue)}
-.ba{background:var(--amber-lt);color:var(--amber)}
-.bgr{background:var(--gray100);color:var(--gray500)}
-.empty-state{text-align:center;padding:40px 24px;color:var(--gray500)}
-.empty-state .ei{font-size:36px;margin-bottom:10px}
-.empty-state p{font-size:13px}
-#toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:11px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;transform:translateY(80px);transition:transform .3s;max-width:300px}
+tfoot td{font-weight:700;color:var(--navy);border-top:2px solid var(--navy);padding-top:8px}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.bg{background:var(--glt);color:var(--green)}.br{background:var(--rlt);color:var(--red)}
+.bb{background:var(--blt);color:var(--blue)}.ba{background:var(--alt);color:var(--amber)}
+.bgr{background:var(--g100);color:var(--g500)}
+.empty{text-align:center;padding:36px 20px;color:var(--g500)}
+.empty .ei{font-size:32px;margin-bottom:8px}
+.empty p{font-size:13px}
+#toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:var(--white);padding:10px 16px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;transform:translateY(80px);transition:transform .3s;max-width:280px}
 #toast.show{transform:translateY(0)}
 #toast.success{background:var(--green)}
 #toast.error{background:var(--red)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--white);border-radius:var(--radius-lg);width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.18)}
-.modal-head{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--gray100);gap:10px}
-.modal-head h3{flex:1;font-size:15px;font-weight:700;color:var(--navy)}
-.modal-close{background:none;border:none;cursor:pointer;color:var(--gray500);font-size:18px;padding:2px}
-.modal-close:hover{color:var(--navy)}
-.modal-body{padding:18px}
-.modal-foot{padding:12px 18px;border-top:1px solid var(--gray100);display:flex;gap:10px;justify-content:flex-end}
-.loading{text-align:center;padding:28px;color:var(--gray500);font-size:13px}
-.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--gray300);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.md{background:var(--white);border-radius:var(--rl);width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.18)}
+.mdh{display:flex;align-items:center;padding:13px 17px;border-bottom:1px solid var(--g100);gap:9px}
+.mdh h3{flex:1;font-size:14px;font-weight:700;color:var(--navy)}
+.mdc{background:none;border:none;cursor:pointer;color:var(--g500);font-size:17px;padding:2px}.mdc:hover{color:var(--navy)}
+.mdb{padding:17px}
+.mdf{padding:11px 17px;border-top:1px solid var(--g100);display:flex;gap:9px;justify-content:flex-end}
+.loading{text-align:center;padding:26px;color:var(--g500);font-size:13px}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid var(--g300);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ptabs{display:flex;border-bottom:2px solid var(--gray100);margin-bottom:18px}
-.ptab{padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--gray500);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s}
+.ptabs{display:flex;border-bottom:2px solid var(--g100);margin-bottom:16px}
+.ptab{padding:7px 15px;cursor:pointer;font-size:13px;font-weight:600;color:var(--g500);border-bottom:2px solid transparent;margin-bottom:-2px}
 .ptab.active{color:var(--navy);border-bottom-color:var(--gold)}
-.progress-bar{height:5px;background:var(--gray100);border-radius:3px;overflow:hidden;margin-top:7px}
-.progress-fill{height:100%;border-radius:3px;background:var(--navy);transition:width .5s}
-.pf-green{background:var(--green)}.pf-red{background:var(--red)}.pf-gold{background:var(--gold)}
-.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.rpt-header{text-align:center;margin-bottom:24px}
-.rpt-hosp{font-size:15px;font-weight:700;color:var(--navy)}
-.rpt-dept{font-size:11px;color:var(--gray500);margin-bottom:3px}
-.rpt-rule{border:none;border-top:2px solid var(--navy);margin:7px 0 4px}
-.rpt-period{font-size:11px;color:var(--gray500)}
-.rpt-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:3px}
-.rpt-subtitle{font-size:12px;color:var(--gray500);margin-bottom:14px}
-.sel-sm{padding:6px 10px;border:1.5px solid var(--gray300);border-radius:var(--radius);font-size:13px;outline:none}
-code.ifmis{font-size:11px;background:var(--gray100);padding:2px 5px;border-radius:4px;font-family:Consolas,monospace}
-@media print{.sidebar,.topbar,#toast,.form-actions,.sc-head button,.btn-danger,.ptabs{display:none!important}.content{padding:0}.sc{border:none;box-shadow:none}.page{display:block!important}}
-@media(max-width:800px){.report-grid,.form-grid.g3{grid-template-columns:1fr}.fr.s2,.fr.s3{grid-column:span 1}}
+.pb{height:5px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:6px}
+.pbf{height:100%;border-radius:3px;background:var(--navy);transition:width .5s}
+.pbg{background:var(--green)}.pbr{background:var(--red)}.pbgd{background:var(--gold)}
+.sel-sm{padding:5px 9px;border:1.5px solid var(--g300);border-radius:var(--r);font-size:12px;outline:none}
+code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;font-family:Consolas,monospace}
+/* Reports */
+.rh{text-align:center;margin-bottom:22px;border-bottom:2px solid var(--navy);padding-bottom:10px}
+.rh .rhn{font-size:15px;font-weight:700;color:var(--navy)}
+.rh .rhd{font-size:11px;color:var(--g500)}
+.rh .rht{font-size:16px;font-weight:700;color:var(--navy);margin-top:6px}
+.rh .rhp{font-size:11px;color:var(--g500);margin-top:2px}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+/* Vote management */
+.vcat-header{background:var(--navy);color:var(--white);padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.vote-row{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--g100);gap:10px}
+.vote-row:hover{background:var(--g50)}
+.vote-code{font-family:Consolas,monospace;font-size:11px;background:var(--g100);padding:2px 6px;border-radius:4px;color:var(--navy);min-width:70px;text-align:center}
+.vote-name{flex:1;font-size:13px;color:var(--g700)}
+.vote-amt{font-family:Consolas,monospace;font-size:13px;color:var(--navy);min-width:110px;text-align:right}
+/* Ledger sub-page */
+.ledger-nav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.ledger-nav button{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--g300);background:var(--white);color:var(--g500);cursor:pointer}
+.ledger-nav button.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+/* T-Account */
+.taccount{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--g300);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.tac-side{padding:0}
+.tac-head{background:var(--navy);color:var(--white);padding:8px 12px;font-size:12px;font-weight:700;text-align:center}
+.tac-right .tac-head{background:var(--g700)}
+.tac-body{padding:8px 0;min-height:80px}
+.tac-row{display:flex;justify-content:space-between;padding:4px 12px;font-size:12px;border-bottom:1px solid var(--g100)}
+.tac-total{display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;font-weight:700;border-top:2px solid var(--navy);background:var(--g50)}
+.tac-divider{width:1px;background:var(--g300)}
+@media print{.sidebar,.topbar,#toast,.fax,.sch button,.bdr,.ptabs,.ledger-nav,#vote-actions{display:none!important}.content{padding:0}.sc{border:none}.page{display:block!important}}
+@media(max-width:800px){.rgrid,.fg3{grid-template-columns:1fr}.fr.s2,.fr.s3{grid-column:span 1}}
 </style>
 </head>
 <body>
 
 <!-- AUTH -->
 <div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div class="logo-badge">FS</div>
+  <div class="ac">
+    <div class="alo">
+      <div class="alb">FS</div>
       <h1>LCRH Finance System</h1>
       <p>Lodwar County Referral Hospital · Turkana County Government</p>
     </div>
-    <div id="cfg-section">
-      <div class="cfg-note">⚙️ <strong>First time setup.</strong> Enter your Firebase project credentials to connect cloud storage. These are saved in your browser.</div>
-      <div style="margin-top:14px">
-        <div class="fg"><label>API Key</label><input id="cfg-apiKey" placeholder="AIzaSy..." /></div>
-        <div class="fg"><label>Auth Domain</label><input id="cfg-authDomain" placeholder="your-project.firebaseapp.com" /></div>
-        <div class="fg"><label>Project ID</label><input id="cfg-projectId" placeholder="your-project-id" /></div>
-        <div class="fg"><label>App ID</label><input id="cfg-appId" placeholder="1:123456:web:abc123" /></div>
-        <button class="btn-primary" onclick="saveFirebaseConfig()">Connect to Firebase →</button>
-        <div id="cfg-error" class="auth-error"></div>
+    <div id="cfg-sec">
+      <div class="cnote">⚙️ <strong>First time setup.</strong> Enter your Firebase credentials to connect.</div>
+      <div style="margin-top:13px">
+        <div class="fg"><label>API Key</label><input id="cfg-ak" placeholder="AIzaSy..."/></div>
+        <div class="fg"><label>Auth Domain</label><input id="cfg-ad" placeholder="your-project.firebaseapp.com"/></div>
+        <div class="fg"><label>Project ID</label><input id="cfg-pid" placeholder="your-project-id"/></div>
+        <div class="fg"><label>App ID</label><input id="cfg-aid" placeholder="1:123456:web:abc123"/></div>
+        <button class="bprimary" onclick="saveCfg()">Connect to Firebase →</button>
+        <div id="cfg-err" class="aerr"></div>
       </div>
     </div>
     <div id="auth-panels" style="display:none">
-      <div class="auth-tabs">
-        <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
-        <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+      <div class="atabs">
+        <div class="atab active" onclick="swTab('login')">Sign In</div>
+        <div class="atab" onclick="swTab('reg')">Register</div>
       </div>
-      <div id="panel-login" class="auth-panel active">
-        <div class="fg"><label>Email</label><input type="email" id="login-email" placeholder="accountant@lcrh.go.ke" /></div>
-        <div class="fg"><label>Password</label><input type="password" id="login-pass" /></div>
-        <button class="btn-primary" onclick="doLogin()">Sign In</button>
-        <div id="login-error" class="auth-error"></div>
+      <div id="panel-login" class="apanel active">
+        <div class="fg"><label>Email</label><input type="email" id="li-em" placeholder="accountant@lcrh.go.ke"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="li-pw"/></div>
+        <button class="bprimary" onclick="doLogin()">Sign In</button>
+        <div id="li-err" class="aerr"></div>
       </div>
-      <div id="panel-register" class="auth-panel">
-        <div class="fg"><label>Full Name</label><input id="reg-name" placeholder="Wycliffe Ogetii" /></div>
+      <div id="panel-reg" class="apanel">
+        <div class="fg"><label>Full Name</label><input id="rg-nm" placeholder="Wycliffe Ogetii"/></div>
         <div class="fg"><label>Role</label>
-          <select id="reg-role">
-            <option>Senior Accountant</option><option>Accountant</option>
-            <option>Finance Officer</option><option>Accounts Assistant</option><option>Administrator</option>
-          </select>
+          <select id="rg-rl"><option>Senior Accountant</option><option>Accountant</option><option>Finance Officer</option><option>Accounts Assistant</option><option>Administrator</option></select>
         </div>
-        <div class="fg"><label>Email</label><input type="email" id="reg-email" placeholder="you@lcrh.go.ke" /></div>
-        <div class="fg"><label>Password</label><input type="password" id="reg-pass" placeholder="min 6 characters" /></div>
-        <button class="btn-primary" onclick="doRegister()">Create Account</button>
-        <div id="reg-error" class="auth-error"></div>
+        <div class="fg"><label>Email</label><input type="email" id="rg-em" placeholder="you@lcrh.go.ke"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="rg-pw" placeholder="min 6 characters"/></div>
+        <button class="bprimary" onclick="doReg()">Create Account</button>
+        <div id="rg-err" class="aerr"></div>
       </div>
-      <div style="margin-top:12px;text-align:center">
-        <button class="btn btn-ghost btn-sm" onclick="resetFirebaseConfig()">⚙️ Change Firebase Config</button>
+      <div style="margin-top:11px;text-align:center">
+        <button class="btn bgh bsm" onclick="resetCfg()">⚙️ Change Firebase Config</button>
       </div>
     </div>
   </div>
@@ -199,69 +219,87 @@ code.ifmis{font-size:11px;background:var(--gray100);padding:2px 5px;border-radiu
 <!-- APP -->
 <div id="app">
   <nav class="sidebar">
-    <div class="sb-head">
-      <div class="sb-logo">
-        <div class="sb-badge">FS</div>
-        <div><div class="sb-name">LCRH Finance</div><div class="sb-sub">Turkana County · Health</div></div>
+    <div class="sbh">
+      <div class="sbl">
+        <div class="sbb">FS</div>
+        <div><div class="sbn">LCRH Finance</div><div class="sbs">Turkana County · Health</div></div>
       </div>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Overview</div>
-      <div class="nav-item active" onclick="navigate('dashboard')"><span>📊</span> Dashboard</div>
+    <div class="ns">
+      <div class="nl">Overview</div>
+      <div class="ni active" onclick="nav('dashboard')"><span>📊</span> Dashboard</div>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Transactions</div>
-      <div class="nav-item" onclick="navigate('cashbook')"><span>📒</span> Cash Book</div>
-      <div class="nav-item" onclick="navigate('votebook')"><span>🗳️</span> Vote Book</div>
-      <div class="nav-item" onclick="navigate('accruals')"><span>📋</span> Accrual Journal</div>
-      <div class="nav-item" onclick="navigate('revenue')"><span>💰</span> Revenue &amp; Claims</div>
+    <div class="ns">
+      <div class="nl">Transactions</div>
+      <div class="ni" onclick="nav('cashbook')"><span>📒</span> Cash Book</div>
+      <div class="ni" onclick="nav('votebook')"><span>🗳️</span> Vote Book</div>
+      <div class="ni" onclick="nav('accruals')"><span>📋</span> Accrual Journal</div>
+      <div class="ni" onclick="nav('revenue')"><span>💰</span> Revenue & Claims</div>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Reports</div>
-      <div class="nav-item" onclick="navigate('reports')"><span>📄</span> Financial Reports</div>
+    <div class="ns">
+      <div class="nl">Ledgers</div>
+      <div class="ni" onclick="nav('ledgers')"><span>📑</span> Sub-Vote Ledgers</div>
+      <div class="ni" onclick="nav('gl')"><span>📚</span> General Ledger</div>
+      <div class="ni" onclick="nav('acb')"><span>🏦</span> Analytical Cash Book</div>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">System</div>
-      <div class="nav-item" onclick="navigate('settings')"><span>⚙️</span> Settings</div>
+    <div class="ns">
+      <div class="nl">Reports</div>
+      <div class="ni" onclick="nav('reports')"><span>📄</span> Financial Reports</div>
+      <div class="ni" onclick="nav('monthly')"><span>📅</span> Monthly Comparative</div>
     </div>
-    <div class="sb-foot">
-      <div class="user-chip">
-        <div class="u-avatar" id="user-avatar">WO</div>
-        <div style="flex:1;min-width:0"><div class="u-name" id="user-name">Loading…</div><div class="u-role" id="user-role">—</div></div>
-        <button class="logout-btn" onclick="doLogout()" title="Sign out">⎋</button>
+    <div class="ns">
+      <div class="nl">System</div>
+      <div class="ni" onclick="nav('votes')"><span>⚙️</span> Vote Management</div>
+      <div class="ni" onclick="nav('settings')"><span>🔧</span> Settings</div>
+    </div>
+    <div class="sbft">
+      <div class="uc">
+        <div class="uav" id="uav">WO</div>
+        <div style="flex:1;min-width:0"><div class="unm" id="unm">Loading…</div><div class="url" id="url">—</div></div>
+        <button class="lob" onclick="doLogout()" title="Sign out">⎋</button>
       </div>
     </div>
   </nav>
 
   <div class="main">
     <div class="topbar">
-      <h2 id="page-title">Dashboard</h2>
-      <span class="topbar-date" id="topbar-date"></span>
+      <h2 id="ptitle">Dashboard</h2>
+      <span class="tbd" id="tbd"></span>
+      <button class="btn bgh bsm" onclick="window.print()" style="display:none" id="print-btn">🖨 Print</button>
     </div>
     <div class="content">
 
       <!-- DASHBOARD -->
       <div id="page-dashboard" class="page active">
-        <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">Receipts (Month)</div><div class="kpi-value green" id="d-receipts">KES 0</div><div class="kpi-sub">Current month</div></div>
-          <div class="kpi-card"><div class="kpi-label">Payments (Month)</div><div class="kpi-value red" id="d-payments">KES 0</div><div class="kpi-sub">Current month</div></div>
-          <div class="kpi-card"><div class="kpi-label">Net Position</div><div class="kpi-value" id="d-net">KES 0</div><div class="kpi-sub" id="d-net-sub">Receipts minus payments</div></div>
-          <div class="kpi-card">
-            <div class="kpi-label">Budget Utilisation</div>
-            <div class="kpi-value gold" id="d-budget-pct">0%</div>
-            <div class="kpi-sub" id="d-budget-sub">—</div>
-            <div class="progress-bar"><div class="progress-fill pf-gold" id="d-budget-bar" style="width:0%"></div></div>
-          </div>
-          <div class="kpi-card"><div class="kpi-label">Accrued Payables</div><div class="kpi-value red" id="d-payables">KES 0</div><div class="kpi-sub">Posted accruals</div></div>
-          <div class="kpi-card"><div class="kpi-label">Pending Claims</div><div class="kpi-value blue" id="d-claims">KES 0</div><div class="kpi-sub" id="d-claims-sub">Outstanding</div></div>
+        <div class="kgrid">
+          <div class="kcard"><div class="klbl">Receipts (Month)</div><div class="kval gn" id="d-rec">KES 0</div><div class="ksub">Current month cash in</div></div>
+          <div class="kcard"><div class="klbl">Payments (Month)</div><div class="kval rd" id="d-pay">KES 0</div><div class="ksub">Current month cash out</div></div>
+          <div class="kcard"><div class="klbl">Net Cash Position</div><div class="kval" id="d-net">KES 0</div><div class="ksub" id="d-netsub">—</div></div>
+          <div class="kcard"><div class="klbl">AIE Utilisation</div><div class="kval gd" id="d-bpct">0%</div><div class="ksub" id="d-bsub">of KES 683M</div><div class="pb"><div class="pbf pbgd" id="d-bbar" style="width:0%"></div></div></div>
+          <div class="kcard"><div class="klbl">Accrued Payables</div><div class="kval rd" id="d-pay2">KES 0</div><div class="ksub">Posted accruals</div></div>
+          <div class="kcard"><div class="klbl">Pending Claims</div><div class="kval bl" id="d-clm">KES 0</div><div class="ksub" id="d-clmsub">—</div></div>
         </div>
         <div class="sc">
-          <div class="sc-head"><h3>Recent Cash Book Entries</h3><button class="btn btn-ghost btn-sm" onclick="navigate('cashbook')">View all →</button></div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Type</th><th class="num">Amount (KES)</th></tr></thead>
-              <tbody id="dash-recent"><tr><td colspan="5" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-            </table></div>
+          <div class="sch"><h3>Recent Cash Book Entries</h3><button class="btn bgh bsm" onclick="nav('cashbook')">View all →</button></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Vote</th><th>Type</th><th class="num">Amount (KES)</th></tr></thead>
+            <tbody id="d-recent"><tr><td colspan="6" class="loading"><span class="sp"></span>Loading…</td></tr></tbody>
+          </table></div></div>
+        </div>
+        <div class="kgrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+          <div class="sc" style="margin:0">
+            <div class="sch"><h3>Top 5 Expenditure Votes</h3></div>
+            <div class="scb" style="padding:0"><div class="tw"><table>
+              <thead><tr><th>Vote</th><th class="num">Spent (KES)</th><th class="num">% of Budget</th></tr></thead>
+              <tbody id="d-topvotes"><tr><td colspan="3" class="loading"><span class="sp"></span></td></tr></tbody>
+            </table></div></div>
+          </div>
+          <div class="sc" style="margin:0">
+            <div class="sch"><h3>Revenue by Stream (Month)</h3></div>
+            <div class="scb" style="padding:0"><div class="tw"><table>
+              <thead><tr><th>Stream</th><th class="num">Amount (KES)</th></tr></thead>
+              <tbody id="d-revstream"><tr><td colspan="2" class="loading"><span class="sp"></span></td></tr></tbody>
+            </table></div></div>
           </div>
         </div>
       </div>
@@ -269,374 +307,342 @@ code.ifmis{font-size:11px;background:var(--gray100);padding:2px 5px;border-radiu
       <!-- CASH BOOK -->
       <div id="page-cashbook" class="page">
         <div class="sc">
-          <div class="sc-head"><h3>New Cash Book Entry</h3></div>
-          <div class="sc-body">
-            <div class="form-grid g3">
-              <div class="fr"><label>Date</label><input type="date" id="cb-date" /></div>
-              <div class="fr"><label>Reference No.</label><input id="cb-ref" placeholder="REC/2025/001" /></div>
-              <div class="fr"><label>Transaction Type</label>
-                <select id="cb-type" onchange="updateCBVote()">
-                  <option value="receipt">Receipt</option><option value="payment">Payment</option>
-                </select>
-              </div>
-              <div class="fr s3"><label>Description / Narration</label><input id="cb-desc" placeholder="e.g. NHIF capitation payment – December 2025" /></div>
-              <div class="fr"><label>IFMIS Sub-Vote Code</label><input id="cb-ifmis" placeholder="e.g. 2211101" /></div>
-              <div class="fr"><label>Vote / Category</label>
-                <select id="cb-vote">
-                  <option>Revenue – OPD</option><option>Revenue – IPD</option><option>Revenue – NHIF/SHA</option>
-                  <option>Revenue – Insurance</option><option>Revenue – FIF</option><option>Revenue – DANIDA</option>
-                  <option>Revenue – Other Grants</option><option>Personnel Emoluments</option>
-                  <option>Operations &amp; Maintenance</option><option>Drugs &amp; Medical Supplies</option>
-                  <option>Non-Pharma Supplies</option><option>Utilities</option>
-                  <option>Capital Expenditure</option><option>Other Recurrent</option>
-                </select>
-              </div>
-              <div class="fr"><label>Amount (KES)</label><input type="number" id="cb-amount" placeholder="0.00" step="0.01" /></div>
+          <div class="sch"><h3>New Cash Book Entry</h3></div>
+          <div class="scb">
+            <div class="fg3">
+              <div class="fr"><label>Date</label><input type="date" id="cb-dt"/></div>
+              <div class="fr"><label>Reference No.</label><input id="cb-rf" placeholder="REC/2025/001"/></div>
+              <div class="fr"><label>Type</label><select id="cb-tp" onchange="updateCBVote()"><option value="receipt">Receipt</option><option value="payment">Payment</option></select></div>
+              <div class="fr s3"><label>Description / Narration</label><input id="cb-ds" placeholder="e.g. NHIF capitation payment – December 2025"/></div>
+              <div class="fr"><label>IFMIS Vote Code</label><input id="cb-ic" placeholder="e.g. 2211001"/></div>
+              <div class="fr"><label>Vote / Category</label><select id="cb-vt"></select></div>
+              <div class="fr"><label>Amount (KES)</label><input type="number" id="cb-am" step="0.01"/></div>
               <div class="fr"><label>Bank / Fund</label>
-                <select id="cb-bank">
-                  <option>KCB Main Account</option><option>FIF Account</option>
-                  <option>NHIF/SHA Account</option><option>Petty Cash</option>
-                </select>
+                <select id="cb-bk"><option>KCB Main Account</option><option>FIF Account</option><option>NHIF/SHA Account</option><option>Petty Cash</option></select>
               </div>
-              <div class="fr"><label>Cheque / EFT Ref.</label><input id="cb-cheque" placeholder="Optional" /></div>
-              <div class="fr s3"><label>Remarks</label><input id="cb-remarks" placeholder="Additional notes (optional)" /></div>
+              <div class="fr"><label>Cheque / EFT Ref.</label><input id="cb-ch" placeholder="Optional"/></div>
+              <div class="fr s3"><label>Remarks</label><input id="cb-rm" placeholder="Additional notes (optional)"/></div>
             </div>
-            <div class="form-actions">
-              <button class="btn btn-ghost" onclick="clrCB()">Clear</button>
-              <button class="btn btn-navy" onclick="saveCB()">💾 Save Entry</button>
-            </div>
+            <div class="fax"><button class="btn bgh" onclick="clrCB()">Clear</button><button class="btn bnn" onclick="saveCB()">💾 Save Entry</button></div>
           </div>
         </div>
         <div class="sc">
-          <div class="sc-head">
+          <div class="sch">
             <h3>Cash Book Ledger</h3>
-            <select class="sel-sm" id="cb-filter-month" onchange="renderCB()"></select>
-            <select class="sel-sm" id="cb-filter-type" onchange="renderCB()">
-              <option value="">All Types</option><option value="receipt">Receipts</option><option value="payment">Payments</option>
-            </select>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('cashbook')">⬇ CSV</button>
+            <select class="sel-sm" id="cb-fm" onchange="renderCB()"></select>
+            <select class="sel-sm" id="cb-ft" onchange="renderCB()"><option value="">All Types</option><option value="receipt">Receipts</option><option value="payment">Payments</option></select>
+            <button class="btn bgh bsm" onclick="expCSV('cb')">⬇ CSV</button>
           </div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>IFMIS</th><th>Vote</th><th>Bank</th><th class="num">Receipts</th><th class="num">Payments</th><th></th></tr></thead>
-              <tbody id="cb-tbody"><tr><td colspan="9" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-              <tfoot><tr><td colspan="6" class="bold">TOTALS</td><td class="num bold" style="color:var(--green)" id="cb-tot-r">0.00</td><td class="num bold" style="color:var(--red)" id="cb-tot-p">0.00</td><td></td></tr></tfoot>
-            </table></div>
-          </div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>IFMIS</th><th>Vote</th><th>Bank</th><th class="num">Receipts</th><th class="num">Payments</th><th>Balance</th><th></th></tr></thead>
+            <tbody id="cb-tb"></tbody>
+            <tfoot><tr><td colspan="6" class="bold">TOTALS</td><td class="num bold" style="color:var(--green)" id="cb-tr">0.00</td><td class="num bold" style="color:var(--red)" id="cb-tp">0.00</td><td class="num bold" id="cb-tbal">0.00</td><td></td></tr></tfoot>
+          </table></div></div>
         </div>
       </div>
 
       <!-- VOTE BOOK -->
       <div id="page-votebook" class="page">
         <div class="sc">
-          <div class="sc-head"><h3>Budget vs Actual Summary</h3><button class="btn btn-navy btn-sm" onclick="openModal('vote-modal')">+ Set Budget</button></div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Vote Head</th><th>IFMIS</th><th class="num">Approved Budget</th><th class="num">Actual Spent</th><th class="num">Balance</th><th class="num">% Used</th><th>Status</th></tr></thead>
-              <tbody id="vb-tbody"><tr><td colspan="7" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-              <tfoot><tr><td colspan="2" class="bold">TOTAL</td><td class="num bold" id="vb-tot-b">0.00</td><td class="num bold" id="vb-tot-a">0.00</td><td class="num bold" id="vb-tot-bal">0.00</td><td colspan="2"></td></tr></tfoot>
-            </table></div>
-          </div>
+          <div class="sch"><h3>AIE Budget vs Actual Summary</h3><button class="btn bnn bsm" onclick="openModal('vm')">+ Record Expenditure</button></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Code</th><th>Vote Item</th><th>Category</th><th class="num">AIE Budget</th><th class="num">Committed</th><th class="num">Accrued</th><th class="num">Paid</th><th class="num">Total Spent</th><th class="num">Balance</th><th class="num">% Used</th><th>Status</th></tr></thead>
+            <tbody id="vb-tb"></tbody>
+            <tfoot><tr><td colspan="3" class="bold">TOTAL</td><td class="num bold" id="vb-tb2">0.00</td><td class="num bold" id="vb-tc">0.00</td><td class="num bold" id="vb-ta">0.00</td><td class="num bold" id="vb-tp">0.00</td><td class="num bold" id="vb-ts">0.00</td><td class="num bold" id="vb-tbal">0.00</td><td colspan="2"></td></tr></tfoot>
+          </table></div></div>
         </div>
         <div class="sc">
-          <div class="sc-head"><h3>Record Expenditure Against Vote</h3></div>
-          <div class="sc-body">
-            <div class="form-grid g3">
-              <div class="fr"><label>Date</label><input type="date" id="vb-date" /></div>
-              <div class="fr"><label>LPO / LSO / Voucher No.</label><input id="vb-ref" placeholder="LPO/2025/001" /></div>
-              <div class="fr"><label>Vote Head</label><select id="vb-vote-sel"></select></div>
-              <div class="fr s3"><label>Description</label><input id="vb-desc" placeholder="Narration of expenditure" /></div>
-              <div class="fr"><label>Supplier / Payee</label><input id="vb-supplier" /></div>
-              <div class="fr"><label>Amount (KES)</label><input type="number" id="vb-amount" placeholder="0.00" step="0.01" /></div>
-              <div class="fr"><label>Payment Status</label>
-                <select id="vb-status">
-                  <option value="Committed">Committed (LPO issued)</option>
-                  <option value="Accrued">Accrued (goods received)</option>
-                  <option value="Paid">Paid</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-ghost" onclick="clrVB()">Clear</button>
-              <button class="btn btn-navy" onclick="saveVE()">💾 Save Expenditure</button>
-            </div>
+          <div class="sch"><h3>Expenditure Ledger</h3>
+            <select class="sel-sm" id="vb-fv" onchange="renderVB()"><option value="">All Votes</option></select>
+            <select class="sel-sm" id="vb-fs" onchange="renderVB()"><option value="">All Status</option><option>Committed</option><option>Accrued</option><option>Paid</option></select>
+            <button class="btn bgh bsm" onclick="expCSV('vb')">⬇ CSV</button>
           </div>
-        </div>
-        <div class="sc">
-          <div class="sc-head"><h3>Expenditure Ledger</h3><button class="btn btn-ghost btn-sm" onclick="exportCSV('votebook')">⬇ CSV</button></div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Date</th><th>Reference</th><th>Vote Head</th><th>Description</th><th>Supplier</th><th>Status</th><th class="num">Amount (KES)</th><th></th></tr></thead>
-              <tbody id="vb-ltbody"><tr><td colspan="8" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-            </table></div>
-          </div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>IFMIS Code</th><th>Vote Item</th><th>Description</th><th>Supplier</th><th>Status</th><th class="num">Amount (KES)</th><th></th></tr></thead>
+            <tbody id="vb-ltb"></tbody>
+          </table></div></div>
         </div>
       </div>
 
       <!-- ACCRUALS -->
       <div id="page-accruals" class="page">
-        <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">Total Payables</div><div class="kpi-value red" id="acc-payables">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Total Receivables</div><div class="kpi-value green" id="acc-recv">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Net Accrual Position</div><div class="kpi-value" id="acc-net">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Draft Entries</div><div class="kpi-value gold" id="acc-draft">0</div></div>
+        <div class="kgrid">
+          <div class="kcard"><div class="klbl">Total Payables</div><div class="kval rd" id="acc-py">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Total Receivables</div><div class="kval gn" id="acc-rv">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Net Accrual Position</div><div class="kval" id="acc-nt">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Draft Entries</div><div class="kval gd" id="acc-dr">0</div></div>
         </div>
         <div class="sc">
-          <div class="sc-head"><h3>New Accrual Journal Entry</h3></div>
-          <div class="sc-body">
-            <div class="form-grid">
-              <div class="fr"><label>Transaction Date</label><input type="date" id="acc-date" /></div>
-              <div class="fr"><label>Journal Reference</label><input id="acc-ref" placeholder="JV/2025/001" /></div>
-              <div class="fr"><label>Type</label>
-                <select id="acc-type">
-                  <option value="Payable">Accrued Expense (Payable)</option>
-                  <option value="Receivable">Accrued Revenue (Receivable)</option>
-                  <option value="Prepayment">Prepayment / Advance</option>
-                  <option value="Depreciation">Depreciation</option>
-                  <option value="Adjustment">Adjustment / Correction</option>
-                </select>
-              </div>
-              <div class="fr"><label>IFMIS Account Code</label><input id="acc-account" placeholder="e.g. 2210200" /></div>
-              <div class="fr s2"><label>Description / Narration</label><input id="acc-desc" placeholder="Describe the accrual" /></div>
-              <div class="fr"><label>Debit Account</label><input id="acc-debit" placeholder="Account being debited" /></div>
-              <div class="fr"><label>Credit Account</label><input id="acc-credit" placeholder="Account being credited" /></div>
-              <div class="fr"><label>Amount (KES)</label><input type="number" id="acc-amount" placeholder="0.00" step="0.01" /></div>
-              <div class="fr"><label>Counterparty / Entity</label><input id="acc-party" placeholder="Supplier, insurer, dept name" /></div>
-              <div class="fr"><label>Period</label><input id="acc-period" placeholder="e.g. July 2025" /></div>
-              <div class="fr"><label>Status</label>
-                <select id="acc-status">
-                  <option value="Draft">Draft</option><option value="Posted">Posted</option><option value="Reversed">Reversed</option>
-                </select>
-              </div>
+          <div class="sch"><h3>New Accrual Journal Entry</h3></div>
+          <div class="scb">
+            <div class="fg2">
+              <div class="fr"><label>Transaction Date</label><input type="date" id="ac-dt"/></div>
+              <div class="fr"><label>Journal Reference</label><input id="ac-rf" placeholder="JV/2025/001"/></div>
+              <div class="fr"><label>Type</label><select id="ac-tp"><option value="Payable">Accrued Expense (Payable)</option><option value="Receivable">Accrued Revenue (Receivable)</option><option value="Prepayment">Prepayment / Advance</option><option value="Depreciation">Depreciation</option><option value="Adjustment">Adjustment / Correction</option></select></div>
+              <div class="fr"><label>IFMIS Account Code</label><input id="ac-ac" placeholder="e.g. 2210200"/></div>
+              <div class="fr s2"><label>Description / Narration</label><input id="ac-ds" placeholder="Describe the accrual"/></div>
+              <div class="fr"><label>Debit Account</label><input id="ac-db" placeholder="Account being debited"/></div>
+              <div class="fr"><label>Credit Account</label><input id="ac-cr" placeholder="Account being credited"/></div>
+              <div class="fr"><label>Amount (KES)</label><input type="number" id="ac-am" step="0.01"/></div>
+              <div class="fr"><label>Counterparty / Entity</label><input id="ac-pt" placeholder="Supplier, insurer, dept name"/></div>
+              <div class="fr"><label>Period</label><input id="ac-pr" placeholder="e.g. July 2025"/></div>
+              <div class="fr"><label>Status</label><select id="ac-st"><option value="Draft">Draft</option><option value="Posted">Posted</option><option value="Reversed">Reversed</option></select></div>
             </div>
-            <div class="form-actions">
-              <button class="btn btn-ghost" onclick="clrAcc()">Clear</button>
-              <button class="btn btn-navy" onclick="saveAcc()">💾 Post Journal</button>
-            </div>
+            <div class="fax"><button class="btn bgh" onclick="clrAcc()">Clear</button><button class="btn bnn" onclick="saveAcc()">💾 Post Journal</button></div>
           </div>
         </div>
         <div class="sc">
-          <div class="sc-head">
-            <h3>Accrual Journal Ledger</h3>
-            <select class="sel-sm" id="acc-filter" onchange="renderAcc()">
-              <option value="">All Types</option><option value="Payable">Payables</option>
-              <option value="Receivable">Receivables</option><option value="Prepayment">Prepayments</option>
-              <option value="Depreciation">Depreciation</option><option value="Adjustment">Adjustments</option>
-            </select>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('accruals')">⬇ CSV</button>
+          <div class="sch"><h3>Accrual Journal Ledger</h3>
+            <select class="sel-sm" id="ac-ft" onchange="renderAcc()"><option value="">All Types</option><option value="Payable">Payables</option><option value="Receivable">Receivables</option><option value="Prepayment">Prepayments</option><option value="Depreciation">Depreciation</option><option value="Adjustment">Adjustments</option></select>
+            <button class="btn bgh bsm" onclick="expCSV('ac')">⬇ CSV</button>
           </div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Date</th><th>Reference</th><th>Type</th><th>Description</th><th>Debit</th><th>Credit</th><th>Period</th><th>Status</th><th class="num">Amount</th><th></th></tr></thead>
-              <tbody id="acc-tbody"><tr><td colspan="10" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-              <tfoot><tr><td colspan="8" class="bold">TOTAL POSTED</td><td class="num bold" id="acc-tot">0.00</td><td></td></tr></tfoot>
-            </table></div>
-          </div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>Type</th><th>Description</th><th>Debit</th><th>Credit</th><th>Period</th><th>Status</th><th class="num">Amount</th><th></th></tr></thead>
+            <tbody id="ac-tb"></tbody>
+            <tfoot><tr><td colspan="8" class="bold">TOTAL POSTED</td><td class="num bold" id="ac-tot">0.00</td><td></td></tr></tfoot>
+          </table></div></div>
         </div>
       </div>
 
       <!-- REVENUE & CLAIMS -->
       <div id="page-revenue" class="page">
-        <div class="kpi-grid">
-          <div class="kpi-card"><div class="kpi-label">OPD Revenue (Month)</div><div class="kpi-value green" id="rv-opd">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">IPD Revenue (Month)</div><div class="kpi-value green" id="rv-ipd">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">NHIF/SHA Claims</div><div class="kpi-value blue" id="rv-nhif">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Insurance Claims</div><div class="kpi-value blue" id="rv-ins">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Pending Collection</div><div class="kpi-value gold" id="rv-pending">KES 0</div></div>
-          <div class="kpi-card"><div class="kpi-label">Claims Collected</div><div class="kpi-value green" id="rv-collected">KES 0</div></div>
+        <div class="kgrid">
+          <div class="kcard"><div class="klbl">OPD Revenue (Month)</div><div class="kval gn" id="rv-opd">KES 0</div></div>
+          <div class="kcard"><div class="klbl">IPD Revenue (Month)</div><div class="kval gn" id="rv-ipd">KES 0</div></div>
+          <div class="kcard"><div class="klbl">NHIF/SHA Claims</div><div class="kval bl" id="rv-nhif">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Insurance Claims</div><div class="kval bl" id="rv-ins">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Pending Collection</div><div class="kval gd" id="rv-pend">KES 0</div></div>
+          <div class="kcard"><div class="klbl">Claims Collected</div><div class="kval gn" id="rv-coll">KES 0</div></div>
         </div>
         <div class="ptabs">
-          <div class="ptab active" onclick="switchRevTab('rev')">Revenue Receipts</div>
-          <div class="ptab" onclick="switchRevTab('clm')">Insurance Claims</div>
+          <div class="ptab active" onclick="swRevTab('rev')">Revenue Receipts</div>
+          <div class="ptab" onclick="swRevTab('clm')">Insurance Claims</div>
         </div>
         <div id="rt-rev">
-          <div class="sc">
-            <div class="sc-head"><h3>Record Revenue Receipt</h3></div>
-            <div class="sc-body">
-              <div class="form-grid g3">
-                <div class="fr"><label>Date</label><input type="date" id="rev-date" /></div>
-                <div class="fr"><label>Receipt No.</label><input id="rev-rcpt" placeholder="RCT/2025/001" /></div>
-                <div class="fr"><label>Revenue Stream</label>
-                  <select id="rev-stream">
-                    <option value="OPD">OPD – Outpatient</option><option value="IPD">IPD – Inpatient</option>
-                    <option value="Lab">Laboratory</option><option value="Pharmacy">Pharmacy</option>
-                    <option value="Radiology">Radiology</option><option value="Maternity">Maternity</option>
-                    <option value="Theatre">Theatre</option><option value="NHIF/SHA">NHIF/SHA Capitation</option>
-                    <option value="Insurance">Medical Insurance</option><option value="FIF">FIF Allocation</option>
-                    <option value="DANIDA">DANIDA Grant</option><option value="Other">Other Income</option>
-                  </select>
-                </div>
-                <div class="fr s3"><label>Description</label><input id="rev-desc" placeholder="Describe the revenue transaction" /></div>
-                <div class="fr"><label>Payer / Patient Group</label><input id="rev-payer" /></div>
-                <div class="fr"><label>Amount (KES)</label><input type="number" id="rev-amount" step="0.01" /></div>
-                <div class="fr"><label>Collected To</label>
-                  <select id="rev-bank">
-                    <option>KCB Main Account</option><option>FIF Account</option><option>NHIF/SHA Account</option><option>Petty Cash</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-actions">
-                <button class="btn btn-ghost" onclick="clrRev()">Clear</button>
-                <button class="btn btn-navy" onclick="saveRev()">💾 Save Revenue</button>
-              </div>
+          <div class="sc"><div class="sch"><h3>Record Revenue Receipt</h3></div><div class="scb">
+            <div class="fg3">
+              <div class="fr"><label>Date</label><input type="date" id="rv-dt"/></div>
+              <div class="fr"><label>Receipt No.</label><input id="rv-rc" placeholder="RCT/2025/001"/></div>
+              <div class="fr"><label>Revenue Stream</label><select id="rv-st"><option value="OPD">OPD – Outpatient</option><option value="IPD">IPD – Inpatient</option><option value="Lab">Laboratory</option><option value="Pharmacy">Pharmacy</option><option value="Radiology">Radiology</option><option value="Maternity">Maternity</option><option value="Theatre">Theatre</option><option value="NHIF/SHA">NHIF/SHA Capitation</option><option value="Insurance">Medical Insurance</option><option value="FIF">FIF Allocation</option><option value="DANIDA">DANIDA Grant</option><option value="County Transfer">County Government Transfer</option><option value="Other">Other Income</option></select></div>
+              <div class="fr s3"><label>Description</label><input id="rv-ds" placeholder="Describe the revenue transaction"/></div>
+              <div class="fr"><label>Payer / Patient Group</label><input id="rv-py"/></div>
+              <div class="fr"><label>Amount (KES)</label><input type="number" id="rv-am" step="0.01"/></div>
+              <div class="fr"><label>Collected To</label><select id="rv-bk"><option>KCB Main Account</option><option>FIF Account</option><option>NHIF/SHA Account</option><option>Petty Cash</option></select></div>
             </div>
-          </div>
-          <div class="sc">
-            <div class="sc-head"><h3>Revenue Ledger</h3><button class="btn btn-ghost btn-sm" onclick="exportCSV('revenue')">⬇ CSV</button></div>
-            <div class="sc-body" style="padding:0">
-              <div class="tw"><table>
-                <thead><tr><th>Date</th><th>Receipt No.</th><th>Stream</th><th>Description</th><th>Payer</th><th>Collected To</th><th class="num">Amount (KES)</th><th></th></tr></thead>
-                <tbody id="rev-tbody"><tr><td colspan="8" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-                <tfoot><tr><td colspan="6" class="bold">TOTAL</td><td class="num bold" style="color:var(--green)" id="rev-tot">0.00</td><td></td></tr></tfoot>
-              </table></div>
-            </div>
+            <div class="fax"><button class="btn bgh" onclick="clrRev()">Clear</button><button class="btn bnn" onclick="saveRev()">💾 Save Revenue</button></div>
+          </div></div>
+          <div class="sc"><div class="sch"><h3>Revenue Ledger</h3><button class="btn bgh bsm" onclick="expCSV('rv')">⬇ CSV</button></div>
+            <div class="scb" style="padding:0"><div class="tw"><table>
+              <thead><tr><th>Date</th><th>Receipt No.</th><th>Stream</th><th>Description</th><th>Payer</th><th>Collected To</th><th class="num">Amount (KES)</th><th></th></tr></thead>
+              <tbody id="rv-tb"></tbody>
+              <tfoot><tr><td colspan="6" class="bold">TOTAL</td><td class="num bold gn" id="rv-tot">0.00</td><td></td></tr></tfoot>
+            </table></div></div>
           </div>
         </div>
         <div id="rt-clm" style="display:none">
-          <div class="sc">
-            <div class="sc-head"><h3>Log Insurance / NHIF Claim</h3></div>
-            <div class="sc-body">
-              <div class="form-grid g3">
-                <div class="fr"><label>Date Submitted</label><input type="date" id="cl-date" /></div>
-                <div class="fr"><label>Claim Reference No.</label><input id="cl-ref" placeholder="CLM/2025/001" /></div>
-                <div class="fr"><label>Insurer / Scheme</label>
-                  <select id="cl-insurer">
-                    <option>NHIF</option><option>SHA (Social Health Authority)</option>
-                    <option>Jubilee Health</option><option>AAR</option><option>CIC</option>
-                    <option>Resolution Health</option><option>Other</option>
-                  </select>
-                </div>
-                <div class="fr s3"><label>Patient / Batch Description</label><input id="cl-desc" placeholder="IP batch Oct 2025 or patient name" /></div>
-                <div class="fr"><label>Claimed Amount (KES)</label><input type="number" id="cl-claimed" step="0.01" /></div>
-                <div class="fr"><label>Approved Amount (KES)</label><input type="number" id="cl-approved" step="0.01" /></div>
-                <div class="fr"><label>Amount Received (KES)</label><input type="number" id="cl-received" step="0.01" /></div>
-                <div class="fr"><label>Expected Collection</label><input type="date" id="cl-expect" /></div>
-                <div class="fr"><label>Date Received</label><input type="date" id="cl-recvdate" /></div>
-                <div class="fr"><label>Status</label>
-                  <select id="cl-status">
-                    <option>Submitted</option><option>Approved</option><option>Partial</option>
-                    <option>Paid</option><option>Rejected</option><option>Disputed</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-actions">
-                <button class="btn btn-ghost" onclick="clrClaim()">Clear</button>
-                <button class="btn btn-navy" onclick="saveClaim()">💾 Save Claim</button>
-              </div>
+          <div class="sc"><div class="sch"><h3>Log Insurance / NHIF Claim</h3></div><div class="scb">
+            <div class="fg3">
+              <div class="fr"><label>Date Submitted</label><input type="date" id="cl-dt"/></div>
+              <div class="fr"><label>Claim Reference No.</label><input id="cl-rf" placeholder="CLM/2025/001"/></div>
+              <div class="fr"><label>Insurer / Scheme</label><select id="cl-in"><option>NHIF</option><option>SHA (Social Health Authority)</option><option>Jubilee Health</option><option>AAR</option><option>CIC</option><option>Resolution Health</option><option>Strathmore Business School</option><option>Other</option></select></div>
+              <div class="fr s3"><label>Patient / Batch Description</label><input id="cl-ds" placeholder="IP batch Oct 2025 or patient name"/></div>
+              <div class="fr"><label>Claimed Amount (KES)</label><input type="number" id="cl-ca" step="0.01"/></div>
+              <div class="fr"><label>Approved Amount (KES)</label><input type="number" id="cl-aa" step="0.01"/></div>
+              <div class="fr"><label>Amount Received (KES)</label><input type="number" id="cl-ra" step="0.01"/></div>
+              <div class="fr"><label>Expected Collection Date</label><input type="date" id="cl-ed"/></div>
+              <div class="fr"><label>Date Received</label><input type="date" id="cl-rd"/></div>
+              <div class="fr"><label>Status</label><select id="cl-st"><option>Submitted</option><option>Approved</option><option>Partial</option><option>Paid</option><option>Rejected</option><option>Disputed</option></select></div>
             </div>
+            <div class="fax"><button class="btn bgh" onclick="clrClm()">Clear</button><button class="btn bnn" onclick="saveClm()">💾 Save Claim</button></div>
+          </div></div>
+          <div class="sc"><div class="sch"><h3>Claims Register</h3>
+            <select class="sel-sm" id="cl-fs" onchange="renderClm()"><option value="">All Status</option><option>Submitted</option><option>Approved</option><option>Partial</option><option>Paid</option><option>Rejected</option></select>
+            <button class="btn bgh bsm" onclick="expCSV('cl')">⬇ CSV</button>
           </div>
-          <div class="sc">
-            <div class="sc-head">
-              <h3>Claims Register</h3>
-              <select class="sel-sm" id="cl-filter" onchange="renderClaims()">
-                <option value="">All Status</option><option>Submitted</option><option>Approved</option>
-                <option>Partial</option><option>Paid</option><option>Rejected</option>
-              </select>
-              <button class="btn btn-ghost btn-sm" onclick="exportCSV('claims')">⬇ CSV</button>
-            </div>
-            <div class="sc-body" style="padding:0">
-              <div class="tw"><table>
-                <thead><tr><th>Date</th><th>Reference</th><th>Insurer</th><th>Description</th><th class="num">Claimed</th><th class="num">Approved</th><th class="num">Received</th><th>Status</th><th></th></tr></thead>
-                <tbody id="cl-tbody"><tr><td colspan="9" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-                <tfoot><tr><td colspan="4" class="bold">TOTAL</td>
-                  <td class="num bold" id="cl-tot-c">0.00</td>
-                  <td class="num bold" id="cl-tot-a">0.00</td>
-                  <td class="num bold" style="color:var(--green)" id="cl-tot-r">0.00</td>
-                  <td colspan="2"></td></tr></tfoot>
-              </table></div>
-            </div>
+            <div class="scb" style="padding:0"><div class="tw"><table>
+              <thead><tr><th>Date</th><th>Reference</th><th>Insurer</th><th>Description</th><th class="num">Claimed</th><th class="num">Approved</th><th class="num">Received</th><th>Status</th><th></th></tr></thead>
+              <tbody id="cl-tb"></tbody>
+              <tfoot><tr><td colspan="4" class="bold">TOTAL</td><td class="num bold" id="cl-tc">0.00</td><td class="num bold" id="cl-ta">0.00</td><td class="num bold gn" id="cl-tr">0.00</td><td colspan="2"></td></tr></tfoot>
+            </table></div></div>
           </div>
+        </div>
+      </div>
+
+      <!-- SUB-VOTE LEDGERS -->
+      <div id="page-ledgers" class="page">
+        <div class="sc">
+          <div class="sch">
+            <h3>Sub-Vote Ledger</h3>
+            <select class="sel-sm" id="lv-sel" onchange="renderSubLedger()" style="flex:1;max-width:400px"></select>
+            <button class="btn bgh bsm" onclick="expCSV('lv')">⬇ CSV</button>
+          </div>
+          <div id="lv-kpis" class="kgrid" style="margin:12px 16px 0"></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Supplier</th><th>LPO/LSO</th><th>Status</th><th class="num">Dr (Expenditure)</th><th class="num">Cr (Budget)</th><th class="num">Balance</th></tr></thead>
+            <tbody id="lv-tb"></tbody>
+            <tfoot><tr><td colspan="6" class="bold">TOTAL</td><td class="num bold" id="lv-td">0.00</td><td class="num bold" id="lv-tc">0.00</td><td class="num bold" id="lv-tbal">0.00</td></tr></tfoot>
+          </table></div></div>
+        </div>
+      </div>
+
+      <!-- GENERAL LEDGER -->
+      <div id="page-gl" class="page">
+        <div class="sc">
+          <div class="sch">
+            <h3>General Ledger – T-Account View</h3>
+            <select class="sel-sm" id="gl-acc" onchange="renderGL()" style="max-width:280px"></select>
+          </div>
+          <div class="scb">
+            <div id="gl-taccount"></div>
+            <div id="gl-entries"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICAL CASH BOOK -->
+      <div id="page-acb" class="page">
+        <div class="sc">
+          <div class="sch">
+            <h3>Analytical Cash Book</h3>
+            <select class="sel-sm" id="acb-mon" onchange="renderACB()"></select>
+            <select class="sel-sm" id="acb-bk" onchange="renderACB()"><option value="">All Banks</option><option>KCB Main Account</option><option>FIF Account</option><option>NHIF/SHA Account</option><option>Petty Cash</option></select>
+            <button class="btn bgh bsm" onclick="expCSV('acb')">⬇ CSV</button>
+          </div>
+          <div id="acb-summary" class="kgrid" style="margin:12px 16px 4px"></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Vote / Category</th><th>Bank/Fund</th><th class="num">Receipts (Dr)</th><th class="num">Payments (Cr)</th><th class="num">Running Balance</th></tr></thead>
+            <tbody id="acb-tb"></tbody>
+            <tfoot><tr><td colspan="5" class="bold">PERIOD TOTALS</td><td class="num bold gn" id="acb-tr">0.00</td><td class="num bold rd" id="acb-tp">0.00</td><td class="num bold" id="acb-tbal">0.00</td></tr></tfoot>
+          </table></div></div>
         </div>
       </div>
 
       <!-- REPORTS -->
       <div id="page-reports" class="page">
-        <div class="sc" style="margin-bottom:16px">
-          <div class="sc-body">
-            <div class="form-grid g3">
-              <div class="fr"><label>Period From</label><input type="date" id="rpt-from" /></div>
-              <div class="fr"><label>Period To</label><input type="date" id="rpt-to" /></div>
-              <div style="display:flex;align-items:flex-end;gap:8px">
-                <button class="btn btn-navy" onclick="genReports()" style="flex:1">📊 Generate</button>
-                <button class="btn btn-ghost" onclick="window.print()">🖨 Print</button>
-              </div>
+        <div class="sc" style="margin-bottom:14px"><div class="scb">
+          <div class="fg3">
+            <div class="fr"><label>Period From</label><input type="date" id="rpt-fr"/></div>
+            <div class="fr"><label>Period To</label><input type="date" id="rpt-to"/></div>
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <button class="btn bnn" onclick="genRpt()" style="flex:1">📊 Generate Reports</button>
+              <button class="btn bgh" onclick="window.print()">🖨 Print</button>
             </div>
           </div>
-        </div>
+        </div></div>
         <div class="ptabs">
-          <div class="ptab active" onclick="switchRpt('tb')">Trial Balance</div>
-          <div class="ptab" onclick="switchRpt('sop')">Performance</div>
-          <div class="ptab" onclick="switchRpt('sofp')">Position</div>
-          <div class="ptab" onclick="switchRpt('scf')">Cash Flow</div>
-          <div class="ptab" onclick="switchRpt('bva')">Budget vs Actual</div>
+          <div class="ptab active" onclick="swRpt('tb')">Trial Balance</div>
+          <div class="ptab" onclick="swRpt('sop')">Performance</div>
+          <div class="ptab" onclick="swRpt('sofp')">Position</div>
+          <div class="ptab" onclick="swRpt('scna')">Net Assets</div>
+          <div class="ptab" onclick="swRpt('scf')">Cash Flow</div>
+          <div class="ptab" onclick="swRpt('bva')">Budget vs Actual</div>
         </div>
-        <div id="rpt-tb"><div class="sc"><div class="sc-body"><div class="empty-state"><div class="ei">📄</div><p>Select a period and click Generate</p></div></div></div></div>
-        <div id="rpt-sop" style="display:none"><div class="sc"><div class="sc-body" id="rpt-sop-c"><div class="empty-state"><div class="ei">📄</div><p>Select a period and click Generate</p></div></div></div></div>
-        <div id="rpt-sofp" style="display:none"><div class="sc"><div class="sc-body" id="rpt-sofp-c"><div class="empty-state"><div class="ei">📄</div><p>Select a period and click Generate</p></div></div></div></div>
-        <div id="rpt-scf" style="display:none"><div class="sc"><div class="sc-body" id="rpt-scf-c"><div class="empty-state"><div class="ei">📄</div><p>Select a period and click Generate</p></div></div></div></div>
-        <div id="rpt-bva" style="display:none"><div class="sc"><div class="sc-body" id="rpt-bva-c"><div class="empty-state"><div class="ei">📄</div><p>Select a period and click Generate</p></div></div></div></div>
+        <div id="rpt-tb"><div class="sc"><div class="scb"><div class="empty"><div class="ei">📄</div><p>Select a period and click Generate Reports</p></div></div></div></div>
+        <div id="rpt-sop" style="display:none"><div class="sc"><div class="scb" id="rpt-sop-c"></div></div></div>
+        <div id="rpt-sofp" style="display:none"><div class="sc"><div class="scb" id="rpt-sofp-c"></div></div></div>
+        <div id="rpt-scna" style="display:none"><div class="sc"><div class="scb" id="rpt-scna-c"></div></div></div>
+        <div id="rpt-scf" style="display:none"><div class="sc"><div class="scb" id="rpt-scf-c"></div></div></div>
+        <div id="rpt-bva" style="display:none"><div class="sc"><div class="scb" id="rpt-bva-c"></div></div></div>
+      </div>
+
+      <!-- MONTHLY COMPARATIVE -->
+      <div id="page-monthly" class="page">
+        <div class="sc" style="margin-bottom:14px"><div class="scb">
+          <div class="fg2">
+            <div class="fr"><label>Financial Year</label><select id="mc-fy"><option value="2025">FY 2025/2026 (Jul 2025 – Jun 2026)</option><option value="2024">FY 2024/2025 (Jul 2024 – Jun 2025)</option></select></div>
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <button class="btn bnn" onclick="genMonthly()" style="flex:1">📅 Generate Comparative</button>
+              <button class="btn bgh" onclick="window.print()">🖨 Print</button>
+            </div>
+          </div>
+        </div></div>
+        <div id="mc-content"><div class="empty"><div class="ei">📅</div><p>Select a financial year and click Generate</p></div></div>
+      </div>
+
+      <!-- VOTE MANAGEMENT -->
+      <div id="page-votes" class="page">
+        <div class="sc">
+          <div class="sch">
+            <h3>Vote Management – AIE 2025/2026</h3>
+            <div id="vote-actions" style="display:flex;gap:8px">
+              <button class="btn bnn bsm" onclick="openModal('add-vote-modal')">+ Add Vote</button>
+              <button class="btn bgh bsm" onclick="loadVoteManagement()">↻ Refresh</button>
+            </div>
+          </div>
+          <div class="scb">
+            <p style="font-size:12px;color:var(--g500);margin-bottom:14px">All 66 AIE vote lines are pre-loaded from your AIE No. TCG/MOH/LCRH/2025/2026/001 (KES 683,000,000). You can add, edit, or delete any vote here. Changes apply immediately to all modules.</p>
+            <div id="votes-list"></div>
+          </div>
+        </div>
       </div>
 
       <!-- SETTINGS -->
       <div id="page-settings" class="page">
-        <div class="sc">
-          <div class="sc-head"><h3>Hospital Information</h3></div>
-          <div class="sc-body">
-            <div class="form-grid">
-              <div class="fr"><label>Hospital Name</label><input id="s-hosp" value="Lodwar County Referral Hospital" /></div>
-              <div class="fr"><label>County</label><input id="s-county" value="Turkana County Government" /></div>
-              <div class="fr"><label>Department</label><input id="s-dept" value="Department of Health Services and Sanitation" /></div>
-              <div class="fr"><label>Financial Year</label><input id="s-fy" placeholder="2025/2026" /></div>
-              <div class="fr"><label>Senior Accountant</label><input id="s-acct" value="Wycliffe Ogetii" /></div>
-              <div class="fr"><label>Title</label><input id="s-title" value="Senior Accountant" /></div>
-            </div>
-            <div class="form-actions"><button class="btn btn-navy" onclick="toast('Settings saved!','success')">💾 Save Settings</button></div>
+        <div class="sc"><div class="sch"><h3>Hospital Information</h3></div><div class="scb">
+          <div class="fg2">
+            <div class="fr"><label>Hospital Name</label><input id="s-hn" value="Lodwar County Referral Hospital"/></div>
+            <div class="fr"><label>County</label><input id="s-cn" value="Turkana County Government"/></div>
+            <div class="fr"><label>Department</label><input id="s-dp" value="Department of Health Services and Sanitation"/></div>
+            <div class="fr"><label>Financial Year</label><input id="s-fy" value="2025/2026"/></div>
+            <div class="fr"><label>Senior Accountant</label><input id="s-ac" value="Wycliffe Ogetii"/></div>
+            <div class="fr"><label>ICPAK No.</label><input id="s-ik" placeholder="ICPAK/XXX"/></div>
+            <div class="fr"><label>CEO / Director</label><input id="s-ceo" value="Nancy Kinyonge"/></div>
+            <div class="fr"><label>Board Chairperson</label><input id="s-ch" value="Mohammud Ali"/></div>
           </div>
+          <div class="fax"><button class="btn bnn" onclick="toast('Settings saved!','success')">💾 Save Settings</button></div>
+        </div></div>
+        <div class="sc"><div class="sch"><h3>Registered Users</h3></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
+            <tbody id="us-tb"></tbody>
+          </table></div></div>
         </div>
-        <div class="sc">
-          <div class="sc-head"><h3>Firebase Configuration</h3></div>
-          <div class="sc-body">
-            <p style="font-size:13px;color:var(--gray500);margin-bottom:12px">Current project is connected. To change, reset and re-enter credentials.</p>
-            <div id="s-cfg-info" style="font-size:13px;color:var(--gray700);font-family:monospace;background:var(--gray50);padding:12px;border-radius:var(--radius)"></div>
-            <div class="form-actions"><button class="btn btn-danger btn-sm" onclick="resetFirebaseConfig()">🔄 Reset &amp; Reconfigure</button></div>
-          </div>
-        </div>
-        <div class="sc">
-          <div class="sc-head"><h3>Registered Users</h3></div>
-          <div class="sc-body" style="padding:0">
-            <div class="tw"><table>
-              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead>
-              <tbody id="users-tbody"><tr><td colspan="4" class="loading"><span class="spinner"></span>Loading…</td></tr></tbody>
-            </table></div>
-          </div>
-        </div>
+        <div class="sc"><div class="sch"><h3>Firebase Config</h3></div><div class="scb">
+          <div id="cfg-info" style="font-size:13px;font-family:monospace;background:var(--g50);padding:11px;border-radius:var(--r);color:var(--g700)"></div>
+          <div class="fax"><button class="btn bdr bsm" onclick="resetCfg()">🔄 Reset & Reconfigure</button></div>
+        </div></div>
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- Vote Budget Modal -->
-<div class="modal-overlay" id="vote-modal">
-  <div class="modal">
-    <div class="modal-head"><h3>Set / Update Budget Allocation</h3><button class="modal-close" onclick="closeModal('vote-modal')">✕</button></div>
-    <div class="modal-body">
-      <div class="form-grid g1">
-        <div class="fr"><label>Vote Head</label>
-          <select id="vm-vote">
-            <option>Personnel Emoluments</option><option>Operations &amp; Maintenance</option>
-            <option>Drugs &amp; Medical Supplies</option><option>Non-Pharma Supplies</option>
-            <option>Utilities</option><option>Capital Expenditure</option><option>Other Recurrent</option>
-          </select>
-        </div>
-        <div class="fr"><label>IFMIS Code</label><input id="vm-ifmis" placeholder="e.g. 2100000" /></div>
-        <div class="fr"><label>Approved Budget (KES)</label><input type="number" id="vm-budget" step="0.01" /></div>
-        <div class="fr"><label>Financial Year</label><input id="vm-fy" placeholder="2025/2026" /></div>
+<!-- Modals -->
+<div class="mo" id="vm">
+  <div class="md">
+    <div class="mdh"><h3>Record Expenditure Against Vote</h3><button class="mdc" onclick="closeModal('vm')">✕</button></div>
+    <div class="mdb">
+      <div class="fg1">
+        <div class="fr"><label>Date</label><input type="date" id="ve-dt"/></div>
+        <div class="fr"><label>LPO / LSO / Voucher No.</label><input id="ve-rf" placeholder="LPO/2025/001"/></div>
+        <div class="fr"><label>Vote Item</label><select id="ve-vt" onchange="autoFillVoteCode()"></select></div>
+        <div class="fr"><label>IFMIS Code (auto-filled)</label><input id="ve-ic" placeholder="Auto-filled from vote selection"/></div>
+        <div class="fr"><label>Description</label><input id="ve-ds" placeholder="Narration of expenditure"/></div>
+        <div class="fr"><label>Supplier / Payee</label><input id="ve-sp"/></div>
+        <div class="fr"><label>Amount (KES)</label><input type="number" id="ve-am" step="0.01"/></div>
+        <div class="fr"><label>Payment Status</label><select id="ve-st"><option value="Committed">Committed (LPO issued)</option><option value="Accrued">Accrued (goods received, invoice pending)</option><option value="Paid">Paid</option></select></div>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('vote-modal')">Cancel</button>
-      <button class="btn btn-navy" onclick="saveVoteBudget()">💾 Save Budget</button>
+    <div class="mdf"><button class="btn bgh" onclick="closeModal('vm')">Cancel</button><button class="btn bnn" onclick="saveVE()">💾 Save Expenditure</button></div>
+  </div>
+</div>
+
+<div class="mo" id="add-vote-modal">
+  <div class="md">
+    <div class="mdh"><h3 id="avm-title">Add New Vote Item</h3><button class="mdc" onclick="closeModal('add-vote-modal')">✕</button></div>
+    <div class="mdb">
+      <div class="fg1">
+        <div class="fr"><label>IFMIS Code</label><input id="av-code" placeholder="e.g. 2211001"/></div>
+        <div class="fr"><label>Vote Item Name</label><input id="av-name" placeholder="e.g. Medical Drugs"/></div>
+        <div class="fr"><label>Category</label><select id="av-cat"><option>Operations & Maintenance</option><option>Medical & Clinical Supplies</option><option>General Supplies</option><option>Contracted Services</option><option>Maintenance</option><option>Capital Expenditure</option><option>Personnel Emoluments</option><option>Other</option></select></div>
+        <div class="fr"><label>AIE Budget Amount (KES)</label><input type="number" id="av-amt" step="0.01" placeholder="0.00"/></div>
+        <div class="fr"><label>Financial Year</label><input id="av-fy" value="2025/2026"/></div>
+      </div>
+    </div>
+    <div class="mdf">
+      <button class="btn bdr bsm" id="av-del-btn" style="margin-right:auto;display:none" onclick="deleteVote()">🗑 Delete Vote</button>
+      <button class="btn bgh" onclick="closeModal('add-vote-modal')">Cancel</button>
+      <button class="btn bnn" onclick="saveVote()">💾 Save Vote</button>
     </div>
   </div>
 </div>
@@ -644,8 +650,81 @@ code.ifmis{font-size:11px;background:var(--gray100);padding:2px 5px;border-radiu
 <div id="toast"></div>
 
 <script>
-let db=null,auth=null,currentUser=null,userProfile=null;
-let allCB=[],allVE=[],allVB=[],allAcc=[],allRev=[],allClaims=[];
+// ════════════════════════════════════
+// CORE STATE & CONSTANTS
+// ════════════════════════════════════
+let db=null,auth=null,curUser=null,userProfile=null;
+let allCB=[],allVE=[],allVotes=[],allAcc=[],allRev=[],allClm=[];
+let editVoteId=null;
+
+const AIE_VOTES=[
+  {code:"2210101",name:"Electricity",amount:29050000,cat:"Operations & Maintenance"},
+  {code:"2210102",name:"Water and Sewerage Charges (Desludge)",amount:1344000,cat:"Operations & Maintenance"},
+  {code:"2210102",name:"Water and Sewerage Charges (Garbage Collection)",amount:1200000,cat:"Operations & Maintenance"},
+  {code:"2210106",name:"Utilities, Supplies - Others (Water Bills)",amount:1200000,cat:"Operations & Maintenance"},
+  {code:"2210201",name:"Telephone, Telex, Facsimile and Mobile Phone Services",amount:1200000,cat:"Operations & Maintenance"},
+  {code:"2210202",name:"Internet Connections",amount:1152576,cat:"Operations & Maintenance"},
+  {code:"2210203",name:"Courier and Postal Services",amount:48000,cat:"Operations & Maintenance"},
+  {code:"2210299",name:"Communication, Supplies - Others (Public IP)",amount:800000,cat:"Operations & Maintenance"},
+  {code:"2210301",name:"Travel Costs (Airlines, Bus, Railway, Mileage Allowances)",amount:1600000,cat:"Operations & Maintenance"},
+  {code:"2210302",name:"Accommodation - Domestic Travel",amount:8000000,cat:"Operations & Maintenance"},
+  {code:"2210303",name:"Daily Subsistence Allowance",amount:15000000,cat:"Operations & Maintenance"},
+  {code:"2210502",name:"Publishing and Printing Services",amount:900000,cat:"Operations & Maintenance"},
+  {code:"2210504",name:"Advertising, Awareness and Publicity Campaigns",amount:600000,cat:"Operations & Maintenance"},
+  {code:"2210505",name:"Trade Shows and Exhibitions",amount:520000,cat:"Operations & Maintenance"},
+  {code:"2210711",name:"Tuition Fees",amount:3000000,cat:"Operations & Maintenance"},
+  {code:"2210712",name:"Trainee Allowance",amount:4200000,cat:"Operations & Maintenance"},
+  {code:"2210715",name:"Kenya School of Government",amount:4000000,cat:"Operations & Maintenance"},
+  {code:"2210801",name:"Catering Services, Accommodation, Gifts, Food and Drinks",amount:7060000,cat:"Operations & Maintenance"},
+  {code:"2210802",name:"Boards, Committees, Conferences and Seminars",amount:2400000,cat:"Operations & Maintenance"},
+  {code:"2211001",name:"Medical Drugs",amount:163000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211001",name:"Medical Drugs (FIF)",amount:24000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211004",name:"Fungicides, Insecticides and Sprays",amount:2400000,cat:"Medical & Clinical Supplies"},
+  {code:"2211008",name:"Laboratory Materials, Supplies and Small Equipment",amount:15000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211015",name:"Food and Rations",amount:105000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211015",name:"Food and Rations (Fish Feeds)",amount:280000,cat:"Medical & Clinical Supplies"},
+  {code:"2211019",name:"Purchase of Uniforms and Clothing - Patients Gowns",amount:1800000,cat:"Medical & Clinical Supplies"},
+  {code:"2211021",name:"Purchase of Bedding and Linen",amount:10000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211028",name:"Purchase of X-Ray Supplies",amount:5000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211029",name:"Purchase of Safety Gear (Gumboots)",amount:600000,cat:"Medical & Clinical Supplies"},
+  {code:"2211020",name:"Uniform and Clothing Allowance (Security)",amount:600000,cat:"Medical & Clinical Supplies"},
+  {code:"2211031",name:"Specialized Materials - Other (Implants, Health Records, Renal Reagents)",amount:16000000,cat:"Medical & Clinical Supplies"},
+  {code:"2211101",name:"General Office Supplies (Papers, Pencils, Forms, Small Office Equipment)",amount:5000000,cat:"General Supplies"},
+  {code:"2211102",name:"Supplies and Accessories for Computers and Printers",amount:1200000,cat:"General Supplies"},
+  {code:"2211103",name:"Sanitary and Cleaning Materials, Supplies and Services",amount:13000000,cat:"General Supplies"},
+  {code:"2211201",name:"Refined Fuels and Lubricants for Transport",amount:15400000,cat:"General Supplies"},
+  {code:"2211204",name:"Other Fuels (Cooking Gas)",amount:384000,cat:"General Supplies"},
+  {code:"2211301",name:"Bank Service Commission and Charges",amount:236000,cat:"General Supplies"},
+  {code:"2211305",name:"Contracted Cleaning Services",amount:6640000,cat:"Contracted Services"},
+  {code:"2211305",name:"Contracted Guards",amount:740000,cat:"Contracted Services"},
+  {code:"2211305",name:"Contracted Guards (Additional)",amount:1850000,cat:"Contracted Services"},
+  {code:"2211306",name:"Membership Fees, Dues and Subscriptions",amount:1200000,cat:"Contracted Services"},
+  {code:"2211308",name:"Legal Dues/Fees, Arbitration and Compensation Payments",amount:1400000,cat:"Contracted Services"},
+  {code:"2211310",name:"Contracted Professional Services",amount:4000000,cat:"Contracted Services"},
+  {code:"1420219",name:"Valuation Fees",amount:7000000,cat:"Contracted Services"},
+  {code:"2211311",name:"Contracted Technical Services",amount:43200000,cat:"Contracted Services"},
+  {code:"2220101",name:"Maintenance Expenses - Motor Vehicles",amount:17200000,cat:"Maintenance"},
+  {code:"2220105",name:"Routine Maintenance - Vehicles",amount:700000,cat:"Maintenance"},
+  {code:"2220201",name:"Maintenance of Plant, Machinery and Equipment",amount:18000000,cat:"Maintenance"},
+  {code:"2220202",name:"Maintenance of Office Furniture and Equipment",amount:1400000,cat:"Maintenance"},
+  {code:"2220205",name:"Maintenance of Buildings and Stations - Non-Residential",amount:36400000,cat:"Maintenance"},
+  {code:"2220205",name:"Maintenance of Buildings (Steel Tanks)",amount:6000000,cat:"Maintenance"},
+  {code:"2220210",name:"Maintenance of Computers, Software and Networks",amount:545424,cat:"Maintenance"},
+  {code:"3110901",name:"Purchase of Household and Institutional Furniture and Fittings",amount:2500000,cat:"Capital Expenditure"},
+  {code:"3110902",name:"Purchase of Household and Institutional Appliances",amount:2400000,cat:"Capital Expenditure"},
+  {code:"3111001",name:"Purchase of Office Furniture and Fittings",amount:6000000,cat:"Capital Expenditure"},
+  {code:"3111002",name:"Purchase of Point of Sale & Printers",amount:420000,cat:"Capital Expenditure"},
+  {code:"3111112",name:"Purchase of Health Management System (HMIS) Modules",amount:5000000,cat:"Capital Expenditure"},
+  {code:"3111002",name:"Purchase of Computers",amount:8000000,cat:"Capital Expenditure"},
+  {code:"3111002",name:"Purchase of CCTV",amount:4000000,cat:"Capital Expenditure"},
+  {code:"3111003",name:"Purchase of Air Conditioners, Fans and Heating Appliances",amount:4100000,cat:"Capital Expenditure"},
+  {code:"3111005",name:"Purchase of Photocopiers",amount:200000,cat:"Capital Expenditure"},
+  {code:"3111008",name:"Purchase of Printing Equipment",amount:928000,cat:"Capital Expenditure"},
+  {code:"3111106",name:"Purchase of Firefighting Equipment",amount:2400000,cat:"Capital Expenditure"},
+  {code:"3111011",name:"Purchase of Lighting Equipment",amount:3500000,cat:"Capital Expenditure"},
+  {code:"3111101",name:"Purchase of Medical, Physiotherapy and Dental Equipment",amount:20000000,cat:"Capital Expenditure"},
+  {code:"3111120",name:"Purchase of Specialized Plant - Patient Monitors",amount:15102000,cat:"Capital Expenditure"},
+];
 
 const fmt=n=>isNaN(n)?'0.00':Number(n).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtK=n=>'KES '+fmt(n);
@@ -654,267 +733,302 @@ const today=()=>new Date().toISOString().split('T')[0];
 function toast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='show '+(type||'');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3200);
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3500);
 }
 
-// CONFIG
+// ════ CONFIG ════
 function loadCfg(){try{return JSON.parse(localStorage.getItem('lcrh_cfg')||'null')}catch{return null}}
-function saveFirebaseConfig(){
-  const cfg={
-    apiKey:document.getElementById('cfg-apiKey').value.trim(),
-    authDomain:document.getElementById('cfg-authDomain').value.trim(),
-    projectId:document.getElementById('cfg-projectId').value.trim(),
-    appId:document.getElementById('cfg-appId').value.trim(),
-  };
-  if(!cfg.apiKey||!cfg.projectId){document.getElementById('cfg-error').textContent='API Key and Project ID required.';return}
-  localStorage.setItem('lcrh_cfg',JSON.stringify(cfg));
-  initFirebase(cfg);
+function saveCfg(){
+  const cfg={apiKey:document.getElementById('cfg-ak').value.trim(),authDomain:document.getElementById('cfg-ad').value.trim(),projectId:document.getElementById('cfg-pid').value.trim(),appId:document.getElementById('cfg-aid').value.trim()};
+  if(!cfg.apiKey||!cfg.projectId){document.getElementById('cfg-err').textContent='API Key and Project ID required.';return}
+  localStorage.setItem('lcrh_cfg',JSON.stringify(cfg));initFB(cfg);
 }
-function resetFirebaseConfig(){localStorage.removeItem('lcrh_cfg');location.reload()}
-function initFirebase(cfg){
+function resetCfg(){localStorage.removeItem('lcrh_cfg');location.reload()}
+function initFB(cfg){
   try{
     if(!firebase.apps.length)firebase.initializeApp(cfg);
     auth=firebase.auth();db=firebase.firestore();
-    document.getElementById('cfg-section').style.display='none';
+    document.getElementById('cfg-sec').style.display='none';
     document.getElementById('auth-panels').style.display='block';
     auth.onAuthStateChanged(onAuth);
-  }catch(e){document.getElementById('cfg-error').textContent='Firebase error: '+e.message}
+  }catch(e){document.getElementById('cfg-err').textContent='Firebase error: '+e.message}
 }
 
-// AUTH
-function switchAuthTab(tab){
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
-  document.getElementById('panel-login').classList.toggle('active',tab==='login');
-  document.getElementById('panel-register').classList.toggle('active',tab==='register');
+// ════ AUTH ════
+function swTab(t){
+  document.querySelectorAll('.atab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='reg')));
+  document.getElementById('panel-login').classList.toggle('active',t==='login');
+  document.getElementById('panel-reg').classList.toggle('active',t==='reg');
 }
 async function doLogin(){
-  const e=document.getElementById('login-email').value.trim(),p=document.getElementById('login-pass').value;
-  try{await auth.signInWithEmailAndPassword(e,p)}catch(err){document.getElementById('login-error').textContent=err.message}
+  try{await auth.signInWithEmailAndPassword(document.getElementById('li-em').value.trim(),document.getElementById('li-pw').value)}
+  catch(e){document.getElementById('li-err').textContent=e.message}
 }
-async function doRegister(){
-  const name=document.getElementById('reg-name').value.trim();
-  const role=document.getElementById('reg-role').value;
-  const e=document.getElementById('reg-email').value.trim();
-  const p=document.getElementById('reg-pass').value;
-  if(!name){document.getElementById('reg-error').textContent='Full name required.';return}
+async function doReg(){
+  const nm=document.getElementById('rg-nm').value.trim(),rl=document.getElementById('rg-rl').value,em=document.getElementById('rg-em').value.trim(),pw=document.getElementById('rg-pw').value;
+  if(!nm){document.getElementById('rg-err').textContent='Full name required.';return}
   try{
-    const cred=await auth.createUserWithEmailAndPassword(e,p);
-    await db.collection('users').doc(cred.user.uid).set({name,role,email:e,createdAt:new Date().toISOString()});
-    toast('Welcome, '+name+'!','success');
-  }catch(err){document.getElementById('reg-error').textContent=err.message}
+    const c=await auth.createUserWithEmailAndPassword(em,pw);
+    await db.collection('users').doc(c.user.uid).set({name:nm,role:rl,email:em,createdAt:new Date().toISOString()});
+    toast('Welcome, '+nm+'!','success');
+  }catch(e){document.getElementById('rg-err').textContent=e.message}
 }
 async function doLogout(){await auth.signOut()}
 async function onAuth(user){
   if(user){
-    currentUser=user;
-    const doc=await db.collection('users').doc(user.uid).get();
-    userProfile=doc.exists?doc.data():{name:user.email,role:'User'};
+    curUser=user;
+    const d=await db.collection('users').doc(user.uid).get();
+    userProfile=d.exists?d.data():{name:user.email,role:'User'};
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app').classList.add('visible');
-    document.getElementById('user-name').textContent=userProfile.name;
-    document.getElementById('user-role').textContent=userProfile.role;
-    document.getElementById('user-avatar').textContent=userProfile.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-    initUI();navigate('dashboard');
+    document.getElementById('unm').textContent=userProfile.name;
+    document.getElementById('url').textContent=userProfile.role;
+    document.getElementById('uav').textContent=userProfile.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    initUI();
+    // Seed votes if needed
+    await seedVotes();
+    nav('dashboard');
   }else{
     document.getElementById('app').classList.remove('visible');
     document.getElementById('auth-screen').style.display='flex';
   }
 }
 
-function initUI(){
-  const t=today();
-  ['cb-date','vb-date','acc-date','rev-date','cl-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=t});
-  const now=new Date();
-  document.getElementById('topbar-date').textContent=now.toLocaleDateString('en-KE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const yr=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
-  document.getElementById('rpt-from').value=`${yr}-07-01`;
-  document.getElementById('rpt-to').value=t;
-  // Month filter
-  const sel=document.getElementById('cb-filter-month');
-  const mo=[];for(let i=0;i<12;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);mo.push({v:d.toISOString().substring(0,7),l:d.toLocaleString('default',{month:'long',year:'numeric'})})}
-  sel.innerHTML=mo.map(m=>`<option value="${m.v}">${m.l}</option>`).join('');
+// ════ SEED VOTES ════
+async function seedVotes(){
+  const snap=await db.collection('votes').limit(1).get();
+  if(snap.empty){
+    const batch=db.batch();
+    AIE_VOTES.forEach((v,i)=>{
+      const ref=db.collection('votes').doc();
+      batch.set(ref,{...v,fy:'2025/2026',order:i,createdAt:new Date().toISOString()});
+    });
+    await batch.commit();
+    toast('AIE vote lines loaded (66 items, KES 683M)','success');
+  }
 }
 
-// NAV
+// ════ NAV ════
+const ptitles={dashboard:'Dashboard',cashbook:'Cash Book',votebook:'Vote Book',accruals:'Accrual Journal',revenue:'Revenue & Insurance Claims',ledgers:'Sub-Vote Ledgers',gl:'General Ledger',acb:'Analytical Cash Book',reports:'Financial Reports',monthly:'Monthly Comparative Report',votes:'Vote Management',settings:'Settings'};
+const navkeys=['dashboard','cashbook','votebook','accruals','revenue','ledgers','gl','acb','reports','monthly','votes','settings'];
 let curPage='dashboard';
-const pageTitles={dashboard:'Dashboard',cashbook:'Cash Book',votebook:'Vote Book',accruals:'Accrual Journal',revenue:'Revenue & Insurance Claims',reports:'Financial Reports',settings:'Settings'};
-const navKeys=['dashboard','cashbook','votebook','accruals','revenue','reports','settings'];
-function navigate(page){
-  document.querySelectorAll('.nav-item').forEach((el,i)=>el.classList.toggle('active',navKeys[i]===page));
+function nav(page){
+  document.querySelectorAll('.ni').forEach((el,i)=>el.classList.toggle('active',navkeys[i]===page));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('page-title').textContent=pageTitles[page]||page;
+  document.getElementById('ptitle').textContent=ptitles[page]||page;
+  document.getElementById('print-btn').style.display=['reports','monthly','acb','ledgers','gl'].includes(page)?'':'none';
   curPage=page;
-  ({dashboard:loadDash,cashbook:loadCB,votebook:loadVB,accruals:loadAcc,revenue:()=>{loadRev();loadClaims()},reports:()=>{},settings:loadSettings})[page]?.();
+  ({dashboard:loadDash,cashbook:loadCB,votebook:loadVB,accruals:loadAcc,revenue:()=>{loadRev();loadClm()},ledgers:loadLedgers,gl:loadGL,acb:loadACB,reports:()=>{},monthly:()=>{},votes:loadVoteManagement,settings:loadSettings})[page]?.();
 }
 
-// CASH BOOK
-async function saveCB(){
-  const e={
-    date:document.getElementById('cb-date').value,ref:document.getElementById('cb-ref').value.trim(),
-    type:document.getElementById('cb-type').value,desc:document.getElementById('cb-desc').value.trim(),
-    ifmis:document.getElementById('cb-ifmis').value.trim(),vote:document.getElementById('cb-vote').value,
-    amount:parseFloat(document.getElementById('cb-amount').value)||0,bank:document.getElementById('cb-bank').value,
-    cheque:document.getElementById('cb-cheque').value.trim(),remarks:document.getElementById('cb-remarks').value.trim(),
-    createdBy:userProfile.name,createdAt:new Date().toISOString()
-  };
-  if(!e.date||!e.amount||!e.desc){toast('Date, description and amount required.','error');return}
-  try{await db.collection('cashbook').add(e);toast('Entry saved!','success');clrCB();loadCB();if(curPage==='dashboard')loadDash()}catch(err){toast(err.message,'error')}
+function initUI(){
+  const t=today();
+  ['cb-dt','ac-dt','rv-dt','cl-dt','ve-dt'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=t});
+  const now=new Date();
+  document.getElementById('tbd').textContent=now.toLocaleDateString('en-KE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const yr=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+  document.getElementById('rpt-fr').value=`${yr}-07-01`;
+  document.getElementById('rpt-to').value=t;
+  // Month filters
+  const mo=[];for(let i=0;i<14;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);mo.push({v:d.toISOString().substring(0,7),l:d.toLocaleString('default',{month:'long',year:'numeric'})})}
+  ['cb-fm','acb-mon'].forEach(id=>{const s=document.getElementById(id);if(s)s.innerHTML=mo.map(m=>`<option value="${m.v}">${m.l}</option>`).join('')});
 }
-function clrCB(){['cb-ref','cb-desc','cb-ifmis','cb-cheque','cb-remarks'].forEach(id=>document.getElementById(id).value='');document.getElementById('cb-amount').value='';document.getElementById('cb-date').value=today()}
+
+// ════ CASH BOOK ════
+function updateCBVote(){
+  const t=document.getElementById('cb-tp').value;
+  const vs=document.getElementById('cb-vt');
+  if(t==='receipt'){
+    vs.innerHTML='<option>Revenue – OPD</option><option>Revenue – IPD</option><option>Revenue – NHIF/SHA</option><option>Revenue – Insurance</option><option>Revenue – FIF</option><option>Revenue – DANIDA</option><option>Revenue – County Transfer</option><option>Revenue – Other</option>';
+  }else{
+    vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+  }
+}
+async function saveCB(){
+  const e={date:document.getElementById('cb-dt').value,ref:document.getElementById('cb-rf').value.trim(),type:document.getElementById('cb-tp').value,desc:document.getElementById('cb-ds').value.trim(),ifmis:document.getElementById('cb-ic').value.trim(),vote:document.getElementById('cb-vt').value,amount:parseFloat(document.getElementById('cb-am').value)||0,bank:document.getElementById('cb-bk').value,cheque:document.getElementById('cb-ch').value.trim(),remarks:document.getElementById('cb-rm').value.trim(),createdBy:userProfile.name,createdAt:new Date().toISOString()};
+  if(!e.date||!e.amount||!e.desc){toast('Date, description and amount required.','error');return}
+  try{await db.collection('cashbook').add(e);toast('Entry saved!','success');clrCB();loadCB()}catch(err){toast(err.message,'error')}
+}
+function clrCB(){['cb-rf','cb-ds','cb-ic','cb-ch','cb-rm'].forEach(id=>document.getElementById(id).value='');document.getElementById('cb-am').value='';document.getElementById('cb-dt').value=today()}
 async function loadCB(){
-  document.getElementById('cb-tbody').innerHTML='<tr><td colspan="9" class="loading"><span class="spinner"></span>Loading…</td></tr>';
-  try{const s=await db.collection('cashbook').orderBy('date','desc').get();allCB=s.docs.map(d=>({id:d.id,...d.data()}));renderCB()}catch(e){toast(e.message,'error')}
+  document.getElementById('cb-tb').innerHTML='<tr><td colspan="10" class="loading"><span class="sp"></span>Loading…</td></tr>';
+  try{const s=await db.collection('cashbook').orderBy('date','desc').get();allCB=s.docs.map(d=>({id:d.id,...d.data()}));renderCB();populateCBVoteOptions()}catch(e){toast(e.message,'error')}
 }
 function renderCB(){
-  const mf=document.getElementById('cb-filter-month').value,tf=document.getElementById('cb-filter-type').value;
+  const mf=document.getElementById('cb-fm').value,tf=document.getElementById('cb-filter-type')?document.getElementById('cb-filter-type').value:'';
+  const ft=document.getElementById('cb-ft')?.value||'';
   let rows=allCB;
   if(mf)rows=rows.filter(r=>r.date?.startsWith(mf));
-  if(tf)rows=rows.filter(r=>r.type===tf);
-  const tbody=document.getElementById('cb-tbody');
-  tbody.innerHTML=rows.length?rows.map(r=>`<tr>
-    <td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.desc}</td>
-    <td><code class="ifmis">${r.ifmis||'—'}</code></td><td>${r.vote}</td><td>${r.bank}</td>
+  if(ft)rows=rows.filter(r=>r.type===ft);
+  let bal=0;
+  const tbody=document.getElementById('cb-tb');
+  tbody.innerHTML=rows.length?rows.map(r=>{
+    if(r.type==='receipt')bal+=r.amount;else bal-=r.amount;
+    return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.desc}</td><td><code class="ic">${r.ifmis||'—'}</code></td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vote}">${r.vote}</td><td>${r.bank}</td>
     <td class="num" style="color:var(--green)">${r.type==='receipt'?fmt(r.amount):''}</td>
     <td class="num" style="color:var(--red)">${r.type==='payment'?fmt(r.amount):''}</td>
-    <td><button class="btn btn-danger btn-sm btn-icon" onclick="delEntry('cashbook','${r.id}',loadCB)">✕</button></td>
-  </tr>`).join(''):'<tr><td colspan="9"><div class="empty-state"><div class="ei">📒</div><p>No entries found</p></div></td></tr>';
-  document.getElementById('cb-tot-r').textContent=fmt(rows.filter(r=>r.type==='receipt').reduce((s,r)=>s+r.amount,0));
-  document.getElementById('cb-tot-p').textContent=fmt(rows.filter(r=>r.type==='payment').reduce((s,r)=>s+r.amount,0));
+    <td class="num" style="color:${bal>=0?'var(--green)':'var(--red)'}">${fmt(bal)}</td>
+    <td><button class="btn bdr bsm bic" onclick="del('cashbook','${r.id}',loadCB)">✕</button></td></tr>`;
+  }).join(''):'<tr><td colspan="10"><div class="empty"><div class="ei">📒</div><p>No entries found</p></div></td></tr>';
+  const tr=rows.filter(r=>r.type==='receipt').reduce((s,r)=>s+r.amount,0);
+  const tp=rows.filter(r=>r.type==='payment').reduce((s,r)=>s+r.amount,0);
+  document.getElementById('cb-tr').textContent=fmt(tr);
+  document.getElementById('cb-tp').textContent=fmt(tp);
+  document.getElementById('cb-tbal').textContent=fmt(tr-tp);
 }
-function updateCBVote(){
-  const t=document.getElementById('cb-type').value;
-  const v=document.getElementById('cb-vote');
-  v.querySelectorAll('option').forEach(o=>o.style.display=t==='receipt'?(o.value.startsWith('Revenue')?'':'none'):'');
-  v.value=t==='receipt'?'Revenue – OPD':'Personnel Emoluments';
+function populateCBVoteOptions(){
+  const vs=document.getElementById('cb-vt');
+  if(document.getElementById('cb-tp').value==='payment')
+    vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
 }
 
-// VOTE BOOK
-async function saveVoteBudget(){
-  const e={vote:document.getElementById('vm-vote').value,ifmis:document.getElementById('vm-ifmis').value.trim(),budget:parseFloat(document.getElementById('vm-budget').value)||0,fy:document.getElementById('vm-fy').value.trim(),updatedAt:new Date().toISOString()};
-  try{await db.collection('vote_budgets').doc(e.vote.replace(/[^a-zA-Z0-9]/g,'_')).set(e,{merge:true});toast('Budget saved!','success');closeModal('vote-modal');loadVB()}catch(err){toast(err.message,'error')}
-}
+// ════ VOTE BOOK ════
 async function saveVE(){
-  const e={date:document.getElementById('vb-date').value,ref:document.getElementById('vb-ref').value.trim(),vote:document.getElementById('vb-vote-sel').value,desc:document.getElementById('vb-desc').value.trim(),supplier:document.getElementById('vb-supplier').value.trim(),amount:parseFloat(document.getElementById('vb-amount').value)||0,status:document.getElementById('vb-status').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
+  const e={date:document.getElementById('ve-dt').value,ref:document.getElementById('ve-rf').value.trim(),vote:document.getElementById('ve-vt').value,ifmis:document.getElementById('ve-ic').value.trim(),desc:document.getElementById('ve-ds').value.trim(),supplier:document.getElementById('ve-sp').value.trim(),amount:parseFloat(document.getElementById('ve-am').value)||0,status:document.getElementById('ve-st').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
   if(!e.date||!e.amount){toast('Date and amount required.','error');return}
-  try{await db.collection('vote_entries').add(e);toast('Expenditure saved!','success');clrVB();loadVB()}catch(err){toast(err.message,'error')}
+  try{await db.collection('vote_entries').add(e);toast('Expenditure saved!','success');closeModal('vm');loadVB()}catch(err){toast(err.message,'error')}
 }
-function clrVB(){['vb-ref','vb-desc','vb-supplier'].forEach(id=>document.getElementById(id).value='');document.getElementById('vb-amount').value='';document.getElementById('vb-date').value=today()}
 async function loadVB(){
   try{
-    const[bs,es]=await Promise.all([db.collection('vote_budgets').get(),db.collection('vote_entries').orderBy('date','desc').get()]);
-    allVB=bs.docs.map(d=>({id:d.id,...d.data()}));allVE=es.docs.map(d=>({id:d.id,...d.data()}));
-    renderVB();
+    const[vs,es]=await Promise.all([db.collection('votes').orderBy('order').get(),db.collection('vote_entries').orderBy('date','desc').get()]);
+    allVotes=vs.docs.map(d=>({id:d.id,...d.data()}));
+    allVE=es.docs.map(d=>({id:d.id,...d.data()}));
+    renderVB();populateVoteSelects();
   }catch(e){console.error(e)}
 }
 function renderVB(){
-  const vsel=document.getElementById('vb-vote-sel');
-  vsel.innerHTML=allVB.map(b=>`<option value="${b.vote}">${b.vote}</option>`).join('')||'<option value="Personnel Emoluments">Personnel Emoluments</option>';
-  const tbody=document.getElementById('vb-tbody');
-  let totB=0,totA=0;
-  tbody.innerHTML=allVB.length?allVB.map(b=>{
-    const actual=allVE.filter(e=>e.vote===b.vote).reduce((s,e)=>s+e.amount,0);
-    const bal=b.budget-actual;const pct=b.budget>0?(actual/b.budget*100):0;
-    totB+=b.budget;totA+=actual;
+  const vfil=document.getElementById('vb-fv')?.value||'';
+  const sfil=document.getElementById('vb-fs')?.value||'';
+  const tbody=document.getElementById('vb-tb');
+  let totB=0,totC=0,totA=0,totP=0;
+  tbody.innerHTML=allVotes.map(v=>{
+    const ents=allVE.filter(e=>e.vote===v.name);
+    const com=ents.filter(e=>e.status==='Committed').reduce((s,e)=>s+e.amount,0);
+    const acc=ents.filter(e=>e.status==='Accrued').reduce((s,e)=>s+e.amount,0);
+    const paid=ents.filter(e=>e.status==='Paid').reduce((s,e)=>s+e.amount,0);
+    const total=com+acc+paid;const bal=v.amount-total;const pct=v.amount>0?(total/v.amount*100):0;
+    totB+=v.amount;totC+=com;totA+=acc;totP+=paid;
     const bc=pct>90?'br':pct>75?'ba':'bg';const st=pct>90?'Critical':pct>75?'Caution':'On Track';
-    return`<tr><td class="bold">${b.vote}</td><td><code class="ifmis">${b.ifmis||'—'}</code></td>
-    <td class="num">${fmt(b.budget)}</td><td class="num">${fmt(actual)}</td>
+    return`<tr><td><code class="ic">${v.code}</code></td><td style="max-width:200px" title="${v.name}">${v.name}</td><td><span class="badge bgr">${v.cat}</span></td>
+    <td class="num">${fmt(v.amount)}</td><td class="num">${fmt(com)}</td><td class="num">${fmt(acc)}</td><td class="num">${fmt(paid)}</td>
+    <td class="num bold">${fmt(total)}</td>
     <td class="num" style="color:${bal<0?'var(--red)':'var(--green)'}">${fmt(bal)}</td>
-    <td class="num">${pct.toFixed(1)}%</td><td><span class="badge ${bc}">${st}</span></td></tr>`;
-  }).join(''):'<tr><td colspan="7"><div class="empty-state"><div class="ei">🗳️</div><p>No budgets set. Click "+ Set Budget".</p></div></td></tr>';
-  document.getElementById('vb-tot-b').textContent=fmt(totB);
-  document.getElementById('vb-tot-a').textContent=fmt(totA);
-  document.getElementById('vb-tot-bal').textContent=fmt(totB-totA);
-  const ltbody=document.getElementById('vb-ltbody');
-  ltbody.innerHTML=allVE.length?allVE.map(e=>{
+    <td class="num">${pct.toFixed(1)}%</td>
+    <td><span class="badge ${bc}">${st}</span></td></tr>`;
+  }).join('');
+  document.getElementById('vb-tb2').textContent=fmt(totB);
+  document.getElementById('vb-tc').textContent=fmt(totC);
+  document.getElementById('vb-ta').textContent=fmt(totA);
+  document.getElementById('vb-tp').textContent=fmt(totP);
+  document.getElementById('vb-ts').textContent=fmt(totC+totA+totP);
+  document.getElementById('vb-tbal').textContent=fmt(totB-(totC+totA+totP));
+
+  // Ledger
+  let lrows=allVE;
+  if(vfil)lrows=lrows.filter(r=>r.vote===vfil);
+  if(sfil)lrows=lrows.filter(r=>r.status===sfil);
+  document.getElementById('vb-ltb').innerHTML=lrows.length?lrows.map(e=>{
     const sc={Committed:'ba',Accrued:'bb',Paid:'bg'}[e.status]||'bgr';
-    return`<tr><td>${e.date}</td><td>${e.ref||'—'}</td><td>${e.vote}</td><td>${e.desc}</td><td>${e.supplier||'—'}</td>
-    <td><span class="badge ${sc}">${e.status}</span></td><td class="num">${fmt(e.amount)}</td>
-    <td><button class="btn btn-danger btn-sm btn-icon" onclick="delEntry('vote_entries','${e.id}',loadVB)">✕</button></td></tr>`;
-  }).join(''):'<tr><td colspan="8"><div class="empty-state"><p>No expenditure entries yet</p></div></td></tr>';
+    return`<tr><td>${e.date}</td><td>${e.ref||'—'}</td><td><code class="ic">${e.ifmis||'—'}</code></td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.vote}">${e.vote}</td>
+    <td>${e.desc}</td><td>${e.supplier||'—'}</td>
+    <td><span class="badge ${sc}">${e.status}</span></td>
+    <td class="num">${fmt(e.amount)}</td>
+    <td><button class="btn bdr bsm bic" onclick="del('vote_entries','${e.id}',loadVB)">✕</button></td></tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><p>No entries yet</p></div></td></tr>';
+}
+function autoFillVoteCode(){
+  const vname=document.getElementById('ve-vt').value;
+  const v=allVotes.find(x=>x.name===vname);
+  if(v)document.getElementById('ve-ic').value=v.code;
+}
+function populateVoteSelects(){
+  const opts=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+  ['ve-vt','vb-fv','lv-sel'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(id==='vb-fv')el.innerHTML='<option value="">All Votes</option>'+allVotes.map(v=>`<option value="${v.name}">${v.name}</option>`).join('');
+    else if(id==='lv-sel')el.innerHTML=allVotes.map(v=>`<option value="${v.id}">${v.code} – ${v.name}</option>`).join('');
+    else el.innerHTML=opts;
+  });
+  // GL accounts
+  const glOpts=['Cash and Bank','Accounts Receivable','Accounts Payable','Revenue – OPD','Revenue – IPD','Revenue – NHIF/SHA','Revenue – Insurance','Revenue – FIF','Revenue – DANIDA','Revenue – County Transfer',...allVotes.map(v=>v.name)];
+  const glSel=document.getElementById('gl-acc');
+  if(glSel)glSel.innerHTML=glOpts.map(o=>`<option value="${o}">${o}</option>`).join('');
 }
 
-// ACCRUALS
+// ════ ACCRUALS ════
 async function saveAcc(){
-  const e={date:document.getElementById('acc-date').value,ref:document.getElementById('acc-ref').value.trim(),type:document.getElementById('acc-type').value,account:document.getElementById('acc-account').value.trim(),desc:document.getElementById('acc-desc').value.trim(),debit:document.getElementById('acc-debit').value.trim(),credit:document.getElementById('acc-credit').value.trim(),amount:parseFloat(document.getElementById('acc-amount').value)||0,party:document.getElementById('acc-party').value.trim(),period:document.getElementById('acc-period').value.trim(),status:document.getElementById('acc-status').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
+  const e={date:document.getElementById('ac-dt').value,ref:document.getElementById('ac-rf').value.trim(),type:document.getElementById('ac-tp').value,account:document.getElementById('ac-ac').value.trim(),desc:document.getElementById('ac-ds').value.trim(),debit:document.getElementById('ac-db').value.trim(),credit:document.getElementById('ac-cr').value.trim(),amount:parseFloat(document.getElementById('ac-am').value)||0,party:document.getElementById('ac-pt').value.trim(),period:document.getElementById('ac-pr').value.trim(),status:document.getElementById('ac-st').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
   if(!e.date||!e.amount){toast('Date and amount required.','error');return}
-  try{await db.collection('accruals').add(e);toast('Journal entry posted!','success');clrAcc();loadAcc()}catch(err){toast(err.message,'error')}
+  try{await db.collection('accruals').add(e);toast('Journal posted!','success');clrAcc();loadAcc()}catch(err){toast(err.message,'error')}
 }
-function clrAcc(){['acc-ref','acc-account','acc-desc','acc-debit','acc-credit','acc-party','acc-period'].forEach(id=>document.getElementById(id).value='');document.getElementById('acc-amount').value='';document.getElementById('acc-date').value=today()}
+function clrAcc(){['ac-rf','ac-ac','ac-ds','ac-db','ac-cr','ac-pt','ac-pr'].forEach(id=>document.getElementById(id).value='');document.getElementById('ac-am').value='';document.getElementById('ac-dt').value=today()}
 async function loadAcc(){
   try{const s=await db.collection('accruals').orderBy('date','desc').get();allAcc=s.docs.map(d=>({id:d.id,...d.data()}));renderAcc()}catch(e){console.error(e)}
 }
 function renderAcc(){
-  const tf=document.getElementById('acc-filter').value;
+  const tf=document.getElementById('ac-ft').value;
   let rows=allAcc;if(tf)rows=rows.filter(r=>r.type===tf);
-  const tbody=document.getElementById('acc-tbody');
-  tbody.innerHTML=rows.length?rows.map(r=>{
+  document.getElementById('ac-tb').innerHTML=rows.length?rows.map(r=>{
     const sc={Draft:'bgr',Posted:'bg',Reversed:'br'}[r.status]||'bgr';
-    return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td><span class="badge bb">${r.type}</span></td>
-    <td>${r.desc}</td><td>${r.debit||'—'}</td><td>${r.credit||'—'}</td><td>${r.period||'—'}</td>
-    <td><span class="badge ${sc}">${r.status}</span></td><td class="num">${fmt(r.amount)}</td>
-    <td><button class="btn btn-danger btn-sm btn-icon" onclick="delEntry('accruals','${r.id}',loadAcc)">✕</button></td></tr>`;
-  }).join(''):'<tr><td colspan="10"><div class="empty-state"><div class="ei">📋</div><p>No accrual entries</p></div></td></tr>';
-  document.getElementById('acc-tot').textContent=fmt(allAcc.filter(r=>r.status==='Posted').reduce((s,r)=>s+r.amount,0));
+    return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td><span class="badge bb">${r.type}</span></td><td>${r.desc}</td><td>${r.debit||'—'}</td><td>${r.credit||'—'}</td><td>${r.period||'—'}</td><td><span class="badge ${sc}">${r.status}</span></td><td class="num">${fmt(r.amount)}</td>
+    <td><button class="btn bdr bsm bic" onclick="del('accruals','${r.id}',loadAcc)">✕</button></td></tr>`;
+  }).join(''):'<tr><td colspan="10"><div class="empty"><div class="ei">📋</div><p>No entries</p></div></td></tr>';
+  document.getElementById('ac-tot').textContent=fmt(allAcc.filter(r=>r.status==='Posted').reduce((s,r)=>s+r.amount,0));
   const pay=allAcc.filter(r=>r.type==='Payable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0);
-  const recv=allAcc.filter(r=>r.type==='Receivable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0);
-  document.getElementById('acc-payables').textContent=fmtK(pay);
-  document.getElementById('acc-recv').textContent=fmtK(recv);
-  const net=recv-pay;const nel=document.getElementById('acc-net');
-  nel.textContent=fmtK(Math.abs(net));nel.className='kpi-value '+(net>=0?'green':'red');
-  document.getElementById('acc-draft').textContent=allAcc.filter(r=>r.status==='Draft').length;
+  const rec=allAcc.filter(r=>r.type==='Receivable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0);
+  document.getElementById('acc-py').textContent=fmtK(pay);
+  document.getElementById('acc-rv').textContent=fmtK(rec);
+  const net=rec-pay;const nel=document.getElementById('acc-nt');nel.textContent=fmtK(Math.abs(net));nel.className='kval '+(net>=0?'gn':'rd');
+  document.getElementById('acc-dr').textContent=allAcc.filter(r=>r.status==='Draft').length;
 }
 
-// REVENUE
-function switchRevTab(tab){
-  document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='rev')||(i===1&&tab==='clm')));
-  document.getElementById('rt-rev').style.display=tab==='rev'?'':'none';
-  document.getElementById('rt-clm').style.display=tab==='clm'?'':'none';
+// ════ REVENUE ════
+function swRevTab(t){
+  document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='rev')||(i===1&&t==='clm')));
+  document.getElementById('rt-rev').style.display=t==='rev'?'':'none';
+  document.getElementById('rt-clm').style.display=t==='clm'?'':'none';
 }
 async function saveRev(){
-  const e={date:document.getElementById('rev-date').value,rcpt:document.getElementById('rev-rcpt').value.trim(),stream:document.getElementById('rev-stream').value,desc:document.getElementById('rev-desc').value.trim(),payer:document.getElementById('rev-payer').value.trim(),amount:parseFloat(document.getElementById('rev-amount').value)||0,bank:document.getElementById('rev-bank').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
+  const e={date:document.getElementById('rv-dt').value,rcpt:document.getElementById('rv-rc').value.trim(),stream:document.getElementById('rv-st').value,desc:document.getElementById('rv-ds').value.trim(),payer:document.getElementById('rv-py').value.trim(),amount:parseFloat(document.getElementById('rv-am').value)||0,bank:document.getElementById('rv-bk').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
   if(!e.date||!e.amount){toast('Date and amount required.','error');return}
   try{await db.collection('revenue').add(e);toast('Revenue saved!','success');clrRev();loadRev()}catch(err){toast(err.message,'error')}
 }
-function clrRev(){['rev-rcpt','rev-desc','rev-payer'].forEach(id=>document.getElementById(id).value='');document.getElementById('rev-amount').value='';document.getElementById('rev-date').value=today()}
+function clrRev(){['rv-rc','rv-ds','rv-py'].forEach(id=>document.getElementById(id).value='');document.getElementById('rv-am').value='';document.getElementById('rv-dt').value=today()}
 async function loadRev(){
   try{const s=await db.collection('revenue').orderBy('date','desc').get();allRev=s.docs.map(d=>({id:d.id,...d.data()}));renderRev()}catch(e){console.error(e)}
 }
 function renderRev(){
-  const tbody=document.getElementById('rev-tbody');
-  tbody.innerHTML=allRev.length?allRev.map(r=>`<tr>
-    <td>${r.date}</td><td>${r.rcpt||'—'}</td><td><span class="badge bg">${r.stream}</span></td>
-    <td>${r.desc}</td><td>${r.payer||'—'}</td><td>${r.bank}</td>
+  document.getElementById('rv-tb').innerHTML=allRev.length?allRev.map(r=>`<tr>
+    <td>${r.date}</td><td>${r.rcpt||'—'}</td><td><span class="badge bg">${r.stream}</span></td><td>${r.desc}</td><td>${r.payer||'—'}</td><td>${r.bank}</td>
     <td class="num" style="color:var(--green)">${fmt(r.amount)}</td>
-    <td><button class="btn btn-danger btn-sm btn-icon" onclick="delEntry('revenue','${r.id}',loadRev)">✕</button></td>
-  </tr>`).join(''):'<tr><td colspan="8"><div class="empty-state"><div class="ei">💰</div><p>No revenue entries</p></div></td></tr>';
-  document.getElementById('rev-tot').textContent=fmt(allRev.reduce((s,r)=>s+r.amount,0));
+    <td><button class="btn bdr bsm bic" onclick="del('revenue','${r.id}',loadRev)">✕</button></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty"><div class="ei">💰</div><p>No revenue entries</p></div></td></tr>';
+  document.getElementById('rv-tot').textContent=fmt(allRev.reduce((s,r)=>s+r.amount,0));
   updateRevKPIs();
 }
-async function saveClaim(){
-  const e={date:document.getElementById('cl-date').value,ref:document.getElementById('cl-ref').value.trim(),insurer:document.getElementById('cl-insurer').value,desc:document.getElementById('cl-desc').value.trim(),claimed:parseFloat(document.getElementById('cl-claimed').value)||0,approved:parseFloat(document.getElementById('cl-approved').value)||0,received:parseFloat(document.getElementById('cl-received').value)||0,expectDate:document.getElementById('cl-expect').value,receivedDate:document.getElementById('cl-recvdate').value,status:document.getElementById('cl-status').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
+async function saveClm(){
+  const e={date:document.getElementById('cl-dt').value,ref:document.getElementById('cl-rf').value.trim(),insurer:document.getElementById('cl-in').value,desc:document.getElementById('cl-ds').value.trim(),claimed:parseFloat(document.getElementById('cl-ca').value)||0,approved:parseFloat(document.getElementById('cl-aa').value)||0,received:parseFloat(document.getElementById('cl-ra').value)||0,expectDate:document.getElementById('cl-ed').value,receivedDate:document.getElementById('cl-rd').value,status:document.getElementById('cl-st').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
   if(!e.date||!e.claimed){toast('Date and claimed amount required.','error');return}
-  try{await db.collection('claims').add(e);toast('Claim logged!','success');clrClaim();loadClaims()}catch(err){toast(err.message,'error')}
+  try{await db.collection('claims').add(e);toast('Claim logged!','success');clrClm();loadClm()}catch(err){toast(err.message,'error')}
 }
-function clrClaim(){['cl-ref','cl-desc'].forEach(id=>document.getElementById(id).value='');['cl-claimed','cl-approved','cl-received'].forEach(id=>document.getElementById(id).value='');['cl-expect','cl-recvdate'].forEach(id=>document.getElementById(id).value='');document.getElementById('cl-date').value=today()}
-async function loadClaims(){
-  try{const s=await db.collection('claims').orderBy('date','desc').get();allClaims=s.docs.map(d=>({id:d.id,...d.data()}));renderClaims()}catch(e){console.error(e)}
+function clrClm(){['cl-rf','cl-ds'].forEach(id=>document.getElementById(id).value='');['cl-ca','cl-aa','cl-ra'].forEach(id=>document.getElementById(id).value='');['cl-ed','cl-rd'].forEach(id=>document.getElementById(id).value='');document.getElementById('cl-dt').value=today()}
+async function loadClm(){
+  try{const s=await db.collection('claims').orderBy('date','desc').get();allClm=s.docs.map(d=>({id:d.id,...d.data()}));renderClm()}catch(e){console.error(e)}
 }
-function renderClaims(){
-  const sf=document.getElementById('cl-filter').value;
-  let rows=allClaims;if(sf)rows=rows.filter(r=>r.status===sf);
-  const tbody=document.getElementById('cl-tbody');
-  tbody.innerHTML=rows.length?rows.map(r=>{
+function renderClm(){
+  const sf=document.getElementById('cl-fs').value;
+  let rows=allClm;if(sf)rows=rows.filter(r=>r.status===sf);
+  document.getElementById('cl-tb').innerHTML=rows.length?rows.map(r=>{
     const sc={Submitted:'ba',Approved:'bb',Partial:'bb',Paid:'bg',Rejected:'br',Disputed:'br'}[r.status]||'bgr';
     return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.insurer}</td><td>${r.desc}</td>
-    <td class="num">${fmt(r.claimed)}</td><td class="num">${r.approved?fmt(r.approved):'—'}</td>
-    <td class="num" style="color:var(--green)">${r.received?fmt(r.received):'—'}</td>
+    <td class="num">${fmt(r.claimed)}</td><td class="num">${r.approved?fmt(r.approved):'—'}</td><td class="num" style="color:var(--green)">${r.received?fmt(r.received):'—'}</td>
     <td><span class="badge ${sc}">${r.status}</span></td>
-    <td><button class="btn btn-danger btn-sm btn-icon" onclick="delEntry('claims','${r.id}',loadClaims)">✕</button></td></tr>`;
-  }).join(''):'<tr><td colspan="9"><div class="empty-state"><div class="ei">📑</div><p>No claims found</p></div></td></tr>';
-  document.getElementById('cl-tot-c').textContent=fmt(rows.reduce((s,r)=>s+r.claimed,0));
-  document.getElementById('cl-tot-a').textContent=fmt(rows.reduce((s,r)=>s+(r.approved||0),0));
-  document.getElementById('cl-tot-r').textContent=fmt(rows.reduce((s,r)=>s+(r.received||0),0));
+    <td><button class="btn bdr bsm bic" onclick="del('claims','${r.id}',loadClm)">✕</button></td></tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">📑</div><p>No claims</p></div></td></tr>';
+  document.getElementById('cl-tc').textContent=fmt(rows.reduce((s,r)=>s+r.claimed,0));
+  document.getElementById('cl-ta').textContent=fmt(rows.reduce((s,r)=>s+(r.approved||0),0));
+  document.getElementById('cl-tr').textContent=fmt(rows.reduce((s,r)=>s+(r.received||0),0));
   updateRevKPIs();
 }
 function updateRevKPIs(){
@@ -922,71 +1036,201 @@ function updateRevKPIs(){
   const mr=allRev.filter(r=>r.date?.startsWith(m));
   document.getElementById('rv-opd').textContent=fmtK(mr.filter(r=>r.stream==='OPD').reduce((s,r)=>s+r.amount,0));
   document.getElementById('rv-ipd').textContent=fmtK(mr.filter(r=>r.stream==='IPD').reduce((s,r)=>s+r.amount,0));
-  document.getElementById('rv-nhif').textContent=fmtK(allClaims.filter(r=>['NHIF','SHA (Social Health Authority)'].includes(r.insurer)).reduce((s,r)=>s+r.claimed,0));
-  document.getElementById('rv-ins').textContent=fmtK(allClaims.filter(r=>!['NHIF','SHA (Social Health Authority)'].includes(r.insurer)).reduce((s,r)=>s+r.claimed,0));
-  document.getElementById('rv-pending').textContent=fmtK(allClaims.filter(r=>['Submitted','Approved','Partial'].includes(r.status)).reduce((s,r)=>s+(r.claimed-(r.received||0)),0));
-  document.getElementById('rv-collected').textContent=fmtK(allClaims.filter(r=>r.status==='Paid').reduce((s,r)=>s+(r.received||0),0));
+  document.getElementById('rv-nhif').textContent=fmtK(allClm.filter(r=>['NHIF','SHA (Social Health Authority)'].includes(r.insurer)).reduce((s,r)=>s+r.claimed,0));
+  document.getElementById('rv-ins').textContent=fmtK(allClm.filter(r=>!['NHIF','SHA (Social Health Authority)'].includes(r.insurer)).reduce((s,r)=>s+r.claimed,0));
+  document.getElementById('rv-pend').textContent=fmtK(allClm.filter(r=>['Submitted','Approved','Partial'].includes(r.status)).reduce((s,r)=>s+(r.claimed-(r.received||0)),0));
+  document.getElementById('rv-coll').textContent=fmtK(allClm.filter(r=>r.status==='Paid').reduce((s,r)=>s+(r.received||0),0));
 }
 
-// DASHBOARD
+// ════ SUB-VOTE LEDGERS ════
+async function loadLedgers(){
+  if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allVE.length){const s=await db.collection('vote_entries').orderBy('date').get();allVE=s.docs.map(d=>({id:d.id,...d.data()}));}
+  populateVoteSelects();
+  renderSubLedger();
+}
+function renderSubLedger(){
+  const vid=document.getElementById('lv-sel').value;
+  const vote=allVotes.find(v=>v.id===vid);
+  if(!vote)return;
+  const entries=allVE.filter(e=>e.vote===vote.name).sort((a,b)=>a.date.localeCompare(b.date));
+  const spent=entries.reduce((s,e)=>s+e.amount,0);
+  const bal=vote.amount-spent;
+  document.getElementById('lv-kpis').innerHTML=`
+    <div class="kcard"><div class="klbl">AIE Budget</div><div class="kval">${fmtK(vote.amount)}</div></div>
+    <div class="kcard"><div class="klbl">Total Spent</div><div class="kval rd">${fmtK(spent)}</div></div>
+    <div class="kcard"><div class="klbl">Balance</div><div class="kval ${bal>=0?'gn':'rd'}">${fmtK(Math.abs(bal))}</div></div>
+    <div class="kcard"><div class="klbl">% Utilised</div><div class="kval gd">${vote.amount>0?(spent/vote.amount*100).toFixed(1):0}%</div></div>`;
+  document.getElementById('lv-tb').innerHTML=entries.length?[{date:'Opening',ref:'AIE '+vote.fy,desc:'Approved Budget Allocation',supplier:'—',ref2:'—',status:'Budget',amount:0,isOpening:true},...entries].map((e,i)=>{
+    if(e.isOpening)return`<tr style="background:var(--g50)"><td colspan="6" class="bold">Opening Balance – AIE Budget: ${fmtK(vote.amount)}</td><td class="num bold" style="color:var(--blue)"></td><td class="num bold" style="color:var(--green)">${fmt(vote.amount)}</td><td class="num bold">${fmt(vote.amount)}</td></tr>`;
+    const cumSpent=entries.slice(0,i).reduce((s,x)=>s+x.amount,0)+e.amount;
+    const remBal=vote.amount-cumSpent;
+    const sc={Committed:'ba',Accrued:'bb',Paid:'bg'}[e.status]||'bgr';
+    return`<tr><td>${e.date}</td><td>${e.ref||'—'}</td><td>${e.desc}</td><td>${e.supplier||'—'}</td><td>${e.ref||'—'}</td>
+    <td><span class="badge ${sc}">${e.status}</span></td>
+    <td class="num" style="color:var(--red)">${fmt(e.amount)}</td><td class="num"></td>
+    <td class="num" style="color:${remBal>=0?'var(--green)':'var(--red)'}">${fmt(remBal)}</td></tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><p>No expenditure recorded for this vote</p></div></td></tr>';
+  document.getElementById('lv-td').textContent=fmt(spent);
+  document.getElementById('lv-tc').textContent=fmt(vote.amount);
+  document.getElementById('lv-tbal').textContent=fmt(bal);
+}
+
+// ════ GENERAL LEDGER ════
+async function loadGL(){
+  if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allCB.length){const s=await db.collection('cashbook').orderBy('date').get();allCB=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allVE.length){const s=await db.collection('vote_entries').orderBy('date').get();allVE=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allAcc.length){const s=await db.collection('accruals').orderBy('date').get();allAcc=s.docs.map(d=>({id:d.id,...d.data()}));}
+  populateVoteSelects();
+  renderGL();
+}
+function renderGL(){
+  const acc=document.getElementById('gl-acc').value;
+  // Build entries for this account
+  let debits=[],credits=[];
+  // Cash and Bank
+  if(acc==='Cash and Bank'){
+    debits=allCB.filter(r=>r.type==='receipt').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+    credits=allCB.filter(r=>r.type==='payment').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+  } else if(acc==='Accounts Receivable'){
+    debits=allAcc.filter(r=>r.type==='Receivable'&&r.status==='Posted').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+    credits=allClm.filter(r=>r.status==='Paid').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.received||0}));
+  } else if(acc==='Accounts Payable'){
+    credits=allAcc.filter(r=>r.type==='Payable'&&r.status==='Posted').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+    debits=allVE.filter(r=>r.status==='Paid').map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+  } else if(acc.startsWith('Revenue')){
+    const stream=acc.replace('Revenue – ','');
+    credits=allRev.filter(r=>r.stream===stream||r.stream===stream.replace('/SHA','/SHA')).map(r=>({date:r.date,ref:r.rcpt,desc:r.desc,amount:r.amount}));
+  } else {
+    // Vote/expenditure account
+    debits=allVE.filter(r=>r.vote===acc).map(r=>({date:r.date,ref:r.ref,desc:r.desc,amount:r.amount}));
+  }
+  const totD=debits.reduce((s,r)=>s+r.amount,0);
+  const totC=credits.reduce((s,r)=>s+r.amount,0);
+  const balance=totD-totC;
+  document.getElementById('gl-taccount').innerHTML=`
+    <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--navy)">${acc}</div>
+    <div class="taccount">
+      <div class="tac-side">
+        <div class="tac-head">DR (Debit)</div>
+        <div class="tac-body">${debits.map(r=>`<div class="tac-row"><span>${r.date} – ${r.desc}</span><span>${fmt(r.amount)}</span></div>`).join('')||'<div style="padding:12px;font-size:12px;color:var(--g500);text-align:center">No debit entries</div>'}</div>
+        <div class="tac-total"><span>Total Dr</span><span>${fmt(totD)}</span></div>
+      </div>
+      <div class="tac-divider"></div>
+      <div class="tac-side tac-right">
+        <div class="tac-head">CR (Credit)</div>
+        <div class="tac-body">${credits.map(r=>`<div class="tac-row"><span>${r.date} – ${r.desc}</span><span>${fmt(r.amount)}</span></div>`).join('')||'<div style="padding:12px;font-size:12px;color:var(--g500);text-align:center">No credit entries</div>'}</div>
+        <div class="tac-total"><span>Total Cr</span><span>${fmt(totC)}</span></div>
+      </div>
+    </div>
+    <div style="text-align:right;font-size:13px;font-weight:700;color:${balance>=0?'var(--navy)':'var(--red)'};padding:8px 0">
+      Balance: ${balance>=0?'Dr':'Cr'} KES ${fmt(Math.abs(balance))}
+    </div>`;
+}
+
+// ════ ANALYTICAL CASH BOOK ════
+async function loadACB(){
+  if(!allCB.length){const s=await db.collection('cashbook').orderBy('date').get();allCB=s.docs.map(d=>({id:d.id,...d.data()}));}
+  renderACB();
+}
+function renderACB(){
+  const mf=document.getElementById('acb-mon').value;
+  const bkf=document.getElementById('acb-bk').value;
+  let rows=allCB.filter(r=>r.date?.startsWith(mf));
+  if(bkf)rows=rows.filter(r=>r.bank===bkf);
+  rows=rows.sort((a,b)=>a.date.localeCompare(b.date));
+  let bal=0,totR=0,totP=0;
+  const kpis=document.getElementById('acb-summary');
+  const tr=rows.filter(r=>r.type==='receipt').reduce((s,r)=>s+r.amount,0);
+  const tp=rows.filter(r=>r.type==='payment').reduce((s,r)=>s+r.amount,0);
+  kpis.innerHTML=`
+    <div class="kcard"><div class="klbl">Opening Balance</div><div class="kval">KES 0</div><div class="ksub">b/f from prior month</div></div>
+    <div class="kcard"><div class="klbl">Total Receipts</div><div class="kval gn">${fmtK(tr)}</div></div>
+    <div class="kcard"><div class="klbl">Total Payments</div><div class="kval rd">${fmtK(tp)}</div></div>
+    <div class="kcard"><div class="klbl">Closing Balance</div><div class="kval ${tr-tp>=0?'gn':'rd'}">${fmtK(tr-tp)}</div></div>`;
+  document.getElementById('acb-tb').innerHTML=rows.length?rows.map(r=>{
+    if(r.type==='receipt'){bal+=r.amount;totR+=r.amount;}else{bal-=r.amount;totP+=r.amount;}
+    return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.desc}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vote}">${r.vote}</td>
+    <td>${r.bank}</td>
+    <td class="num" style="color:var(--green)">${r.type==='receipt'?fmt(r.amount):''}</td>
+    <td class="num" style="color:var(--red)">${r.type==='payment'?fmt(r.amount):''}</td>
+    <td class="num" style="color:${bal>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(bal)}</td></tr>`;
+  }).join(''):'<tr><td colspan="8"><div class="empty"><div class="ei">🏦</div><p>No entries for this period</p></div></td></tr>';
+  document.getElementById('acb-tr').textContent=fmt(totR);
+  document.getElementById('acb-tp').textContent=fmt(totP);
+  document.getElementById('acb-tbal').textContent=fmt(totR-totP);
+}
+
+// ════ DASHBOARD ════
 async function loadDash(){
   const m=new Date().toISOString().substring(0,7);
   try{
     const[cs,vs,ves,as,cls]=await Promise.all([
-      db.collection('cashbook').orderBy('date','desc').limit(60).get(),
-      db.collection('vote_budgets').get(),
+      db.collection('cashbook').orderBy('date','desc').limit(80).get(),
+      db.collection('votes').get(),
       db.collection('vote_entries').get(),
       db.collection('accruals').get(),
       db.collection('claims').get()
     ]);
     allCB=cs.docs.map(d=>({id:d.id,...d.data()}));
-    allVB=vs.docs.map(d=>({id:d.id,...d.data()}));
+    allVotes=vs.docs.map(d=>({id:d.id,...d.data()}));
     allVE=ves.docs.map(d=>({id:d.id,...d.data()}));
     allAcc=as.docs.map(d=>({id:d.id,...d.data()}));
-    allClaims=cls.docs.map(d=>({id:d.id,...d.data()}));
+    allClm=cls.docs.map(d=>({id:d.id,...d.data()}));
     const mc=allCB.filter(r=>r.date?.startsWith(m));
     const rec=mc.filter(r=>r.type==='receipt').reduce((s,r)=>s+r.amount,0);
     const pay=mc.filter(r=>r.type==='payment').reduce((s,r)=>s+r.amount,0);
-    document.getElementById('d-receipts').textContent=fmtK(rec);
-    document.getElementById('d-payments').textContent=fmtK(pay);
-    const net=rec-pay;const nel=document.getElementById('d-net');
-    nel.textContent=fmtK(Math.abs(net));nel.className='kpi-value '+(net>=0?'green':'red');
-    const tB=allVB.reduce((s,b)=>s+b.budget,0);const tS=allVE.reduce((s,e)=>s+e.amount,0);
+    document.getElementById('d-rec').textContent=fmtK(rec);
+    document.getElementById('d-pay').textContent=fmtK(pay);
+    const net=rec-pay;const nel=document.getElementById('d-net');nel.textContent=fmtK(Math.abs(net));nel.className='kval '+(net>=0?'gn':'rd');
+    document.getElementById('d-netsub').textContent=net>=0?'Surplus':'Deficit';
+    const tB=allVotes.reduce((s,v)=>s+v.amount,0);
+    const tS=allVE.reduce((s,e)=>s+e.amount,0);
     const pct=tB>0?Math.min(100,tS/tB*100):0;
-    document.getElementById('d-budget-pct').textContent=pct.toFixed(1)+'%';
-    document.getElementById('d-budget-sub').textContent=`KES ${fmt(tS)} of ${fmt(tB)}`;
-    const bar=document.getElementById('d-budget-bar');bar.style.width=pct+'%';
-    bar.className='progress-fill '+(pct>90?'pf-red':pct>75?'pf-gold':'pf-green');
-    document.getElementById('d-payables').textContent=fmtK(allAcc.filter(r=>r.type==='Payable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0));
-    const pc=allClaims.filter(r=>['Submitted','Approved','Partial'].includes(r.status));
-    document.getElementById('d-claims').textContent=fmtK(pc.reduce((s,r)=>s+r.claimed,0));
-    document.getElementById('d-claims-sub').textContent=`${pc.length} pending claim${pc.length!==1?'s':''}`;
-    const tbody=document.getElementById('dash-recent');
-    const recent=allCB.slice(0,8);
-    tbody.innerHTML=recent.length?recent.map(r=>`<tr>
+    document.getElementById('d-bpct').textContent=pct.toFixed(1)+'%';
+    document.getElementById('d-bsub').textContent=`KES ${fmt(tS)} of KES ${fmt(tB)}`;
+    const bar=document.getElementById('d-bbar');bar.style.width=pct+'%';
+    bar.className='pbf '+(pct>90?'pbr':pct>75?'pbgd':'pbg');
+    document.getElementById('d-pay2').textContent=fmtK(allAcc.filter(r=>r.type==='Payable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0));
+    const pc=allClm.filter(r=>['Submitted','Approved','Partial'].includes(r.status));
+    document.getElementById('d-clm').textContent=fmtK(pc.reduce((s,r)=>s+r.claimed,0));
+    document.getElementById('d-clmsub').textContent=`${pc.length} pending claim${pc.length!==1?'s':''}`;
+    // Recent
+    document.getElementById('d-recent').innerHTML=allCB.slice(0,8).map(r=>`<tr>
       <td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.desc}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vote}">${r.vote}</td>
       <td><span class="badge ${r.type==='receipt'?'bg':'br'}">${r.type}</span></td>
-      <td class="num" style="color:${r.type==='receipt'?'var(--green)':'var(--red)'}">${fmt(r.amount)}</td>
-    </tr>`).join(''):'<tr><td colspan="5"><div class="empty-state"><p>No entries yet</p></div></td></tr>';
+      <td class="num" style="color:${r.type==='receipt'?'var(--green)':'var(--red)'}">${fmt(r.amount)}</td></tr>`).join('')||'<tr><td colspan="6"><div class="empty"><p>No entries yet</p></div></td></tr>';
+    // Top votes
+    const voteSpend={};allVE.forEach(e=>{voteSpend[e.vote]=(voteSpend[e.vote]||0)+e.amount});
+    const topV=Object.entries(voteSpend).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    document.getElementById('d-topvotes').innerHTML=topV.map(([name,amt])=>{
+      const v=allVotes.find(x=>x.name===name);
+      const pct=v&&v.amount>0?(amt/v.amount*100):0;
+      return`<tr><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${name}">${name}</td><td class="num">${fmt(amt)}</td><td class="num">${pct.toFixed(1)}%</td></tr>`;
+    }).join('')||'<tr><td colspan="3" class="loading">No expenditure yet</td></tr>';
+    // Revenue streams this month
+    const rvSnap=await db.collection('revenue').get();allRev=rvSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const mr=allRev.filter(r=>r.date?.startsWith(m));
+    const rbs={};mr.forEach(r=>{rbs[r.stream]=(rbs[r.stream]||0)+r.amount});
+    document.getElementById('d-revstream').innerHTML=Object.keys(rbs).length?Object.entries(rbs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td><span class="badge bg">${k}</span></td><td class="num">${fmt(v)}</td></tr>`).join(''):'<tr><td colspan="2" class="loading">No revenue this month</td></tr>';
   }catch(e){console.error(e)}
 }
 
-// REPORTS
-const rptTabs=['tb','sop','sofp','scf','bva'];
-function switchRpt(tab){
+// ════ REPORTS ════
+const rptTabs=['tb','sop','sofp','scna','scf','bva'];
+function swRpt(tab){
   document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',rptTabs[i]===tab));
-  rptTabs.forEach(t=>document.getElementById('rpt-'+t).style.display=t===tab?'':'none');
+  rptTabs.forEach(t=>{const el=document.getElementById('rpt-'+t);if(el)el.style.display=t===tab?'':'none'});
 }
-async function genReports(){
-  const from=document.getElementById('rpt-from').value,to=document.getElementById('rpt-to').value;
+async function genRpt(){
+  const from=document.getElementById('rpt-fr').value,to=document.getElementById('rpt-to').value;
   if(!from||!to){toast('Select a period first.','error');return}
   toast('Generating reports…');
   try{
-    const[cs,ves,vbs,as,rs,cls]=await Promise.all([
-      db.collection('cashbook').get(),db.collection('vote_entries').get(),
-      db.collection('vote_budgets').get(),db.collection('accruals').get(),
-      db.collection('revenue').get(),db.collection('claims').get()
-    ]);
+    const[cs,ves,vbs,as,rs,cls]=await Promise.all([db.collection('cashbook').get(),db.collection('vote_entries').get(),db.collection('votes').get(),db.collection('accruals').get(),db.collection('revenue').get(),db.collection('claims').get()]);
     const cb=cs.docs.map(d=>d.data()).filter(r=>r.date>=from&&r.date<=to);
     const ve=ves.docs.map(d=>d.data()).filter(r=>r.date>=from&&r.date<=to);
     const vb=vbs.docs.map(d=>d.data());
@@ -995,151 +1239,301 @@ async function genReports(){
     const rec=cb.filter(r=>r.type==='receipt').reduce((s,r)=>s+r.amount,0);
     const pay=cb.filter(r=>r.type==='payment').reduce((s,r)=>s+r.amount,0);
     const payables=acc.filter(r=>r.type==='Payable').reduce((s,r)=>s+r.amount,0);
-    const recv=acc.filter(r=>r.type==='Receivable').reduce((s,r)=>s+r.amount,0);
+    const recvbles=acc.filter(r=>r.type==='Receivable').reduce((s,r)=>s+r.amount,0);
     const depn=acc.filter(r=>r.type==='Depreciation').reduce((s,r)=>s+r.amount,0);
     const revTotal=rev.reduce((s,r)=>s+r.amount,0);
     const rbs={};rev.forEach(r=>{rbs[r.stream]=(rbs[r.stream]||0)+r.amount});
     const pbv={};ve.forEach(e=>{pbv[e.vote]=(pbv[e.vote]||0)+e.amount});
-    const hosp=document.getElementById('s-hosp').value||'Lodwar County Referral Hospital';
+    const hosp=document.getElementById('s-hn')?.value||'Lodwar County Referral Hospital';
+    const ceo=document.getElementById('s-ceo')?.value||'Nancy Kinyonge';
+    const chair=document.getElementById('s-ch')?.value||'Mohammud Ali';
+    const acct=document.getElementById('s-ac')?.value||'Wycliffe Ogetii';
+    const icpak=document.getElementById('s-ik')?.value||'—';
     const period=`${from} to ${to}`;
-    const hdr=`<div class="rpt-header"><div class="rpt-hosp">${hosp}</div>
-      <div class="rpt-dept">Department of Health Services and Sanitation · Turkana County Government</div>
-      <hr class="rpt-rule"><div class="rpt-period">Period: ${period}</div></div>`;
-    // Trial Balance
-    const tbr=[
-      {a:'Cash and Bank Balances',d:rec,c:0},{a:'Accounts Receivable',d:recv,c:0},
+    const hdr=()=>`<div class="rh"><div class="rhn">${hosp}</div><div class="rhd">Department of Health Services and Sanitation · Turkana County Government</div></div>`;
+    const sigBlock=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:28px;padding-top:16px;border-top:1px solid var(--g300)">
+      <div><div style="border-top:1px solid var(--g700);padding-top:6px;margin-top:30px"><div style="font-size:12px;font-weight:600">${chair}</div><div style="font-size:11px;color:var(--g500)">Chairperson, Board of Management</div></div></div>
+      <div><div style="border-top:1px solid var(--g700);padding-top:6px;margin-top:30px"><div style="font-size:12px;font-weight:600">${acct} | ICPAK: ${icpak}</div><div style="font-size:11px;color:var(--g500)">Head of Finance / Senior Accountant</div></div></div>
+      <div><div style="border-top:1px solid var(--g700);padding-top:6px;margin-top:30px"><div style="font-size:12px;font-weight:600">${ceo}</div><div style="font-size:11px;color:var(--g500)">Accounting Officer / CEO</div></div></div>
+    </div>`;
+    // Exchange vs non-exchange breakdown
+    const nonExch=['County Transfer','FIF','DANIDA'];
+    const nonExchTotal=Object.keys(rbs).filter(k=>nonExch.includes(k)).reduce((s,k)=>s+(rbs[k]||0),0);
+    const exchTotal=Object.keys(rbs).filter(k=>!nonExch.includes(k)).reduce((s,k)=>s+(rbs[k]||0),0);
+    const totalExpenses=pay+payables+depn;
+    const surplus=revTotal-totalExpenses;
+    // TRIAL BALANCE
+    const tbRows=[
+      {a:'Cash and Cash Equivalents',d:rec,c:pay},
+      {a:'Accounts Receivable (Insurance/NHIF)',d:recvbles,c:0},
       {a:'Accrued Expenses Payable',d:0,c:payables},
-      ...Object.keys(rbs).map(k=>({a:'Revenue – '+k,d:0,c:rbs[k]})),
+      ...Object.keys(rbs).map(k=>({a:'Revenue – '+k,d:0,c:rbs[k]||0})),
       ...Object.keys(pbv).map(v=>({a:'Expenditure – '+v,d:pbv[v],c:0})),
-      ...(depn>0?[{a:'Depreciation',d:depn,c:0}]:[])
+      ...(depn>0?[{a:'Depreciation and Amortization',d:depn,c:0}]:[])
     ].filter(r=>r.d>0||r.c>0);
-    const tbD=tbr.reduce((s,r)=>s+r.d,0),tbC=tbr.reduce((s,r)=>s+r.c,0);
-    document.getElementById('rpt-tb').innerHTML=`<div class="sc"><div class="sc-body">${hdr}
-      <div class="rpt-title">Trial Balance</div><div class="rpt-subtitle">Accrual Basis (IPSAS) · ${period}</div>
-      <div class="tw"><table><thead><tr><th>Account</th><th class="num">Dr (KES)</th><th class="num">Cr (KES)</th></tr></thead>
-      <tbody>${tbr.map(r=>`<tr><td>${r.a}</td><td class="num">${r.d>0?fmt(r.d):''}</td><td class="num">${r.c>0?fmt(r.c):''}</td></tr>`).join('')}</tbody>
-      <tfoot><tr><td class="bold">TOTAL</td><td class="num bold">${fmt(tbD)}</td><td class="num bold">${fmt(tbC)}</td></tr></tfoot>
-      </table></div></div></div>`;
-    // Statement of Performance
-    const totExp=pay+payables+depn;const surplus=revTotal-totExp;
-    document.getElementById('rpt-sop-c').innerHTML=hdr+`
-      <div class="rpt-title">Statement of Financial Performance</div>
-      <div class="rpt-subtitle">For the Period: ${period}</div>
-      <div class="tw"><table><thead><tr><th>Description</th><th class="num">KES</th></tr></thead>
+    const tbD=tbRows.reduce((s,r)=>s+r.d,0),tbC=tbRows.reduce((s,r)=>s+r.c,0);
+    document.getElementById('rpt-tb').innerHTML=`<div class="sc"><div class="scb">${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px">Trial Balance</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">Accrual Basis (IPSAS) · Period: ${period}</div>
+      <div class="tw"><table><thead><tr><th>Account Description</th><th>Note</th><th class="num">Dr (KES)</th><th class="num">Cr (KES)</th></tr></thead>
+      <tbody>${tbRows.map((r,i)=>`<tr><td>${r.a}</td><td style="color:var(--g500);font-size:11px">${i+1}</td><td class="num">${r.d>0?fmt(r.d):''}</td><td class="num">${r.c>0?fmt(r.c):''}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td class="bold">TOTAL</td><td></td><td class="num bold">${fmt(tbD)}</td><td class="num bold">${fmt(tbC)}</td></tr></tfoot>
+      </table></div>${sigBlock}</div></div>`;
+    // STATEMENT OF FINANCIAL PERFORMANCE
+    document.getElementById('rpt-sop-c').innerHTML=`${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Statement of Financial Performance</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">For the Period Ended: ${to}</div>
+      <div class="tw"><table><thead><tr><th>Description</th><th>Note</th><th class="num">Current Period (KES)</th><th class="num">Comparative (KES)</th></tr></thead>
       <tbody>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">REVENUE</td></tr>
-      ${Object.keys(rbs).map(k=>`<tr><td style="padding-left:22px">Revenue – ${k}</td><td class="num">${fmt(rbs[k])}</td></tr>`).join('')}
-      <tr><td class="bold" style="padding-left:22px">Total Revenue</td><td class="num bold" style="color:var(--green)">${fmt(revTotal)}</td></tr>
-      <tr><td colspan="2" style="height:8px"></td></tr>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">EXPENDITURE</td></tr>
-      ${Object.keys(pbv).map(v=>`<tr><td style="padding-left:22px">${v}</td><td class="num">${fmt(pbv[v])}</td></tr>`).join('')}
-      ${depn>0?`<tr><td style="padding-left:22px">Depreciation</td><td class="num">${fmt(depn)}</td></tr>`:''}
-      <tr><td class="bold" style="padding-left:22px">Total Expenditure</td><td class="num bold" style="color:var(--red)">${fmt(totExp)}</td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50);color:var(--navy)">Revenue from Non-Exchange Transactions</td></tr>
+      ${Object.keys(rbs).filter(k=>nonExch.includes(k)).map((k,i)=>`<tr><td style="padding-left:20px">${k==='County Transfer'?'Transfers from the County Government':k==='FIF'?'FIF Allocation':k}</td><td style="color:var(--g500);font-size:11px">${i+6}</td><td class="num">${fmt(rbs[k])}</td><td class="num" style="color:var(--g300)">—</td></tr>`).join('')}
+      <tr><td style="padding-left:20px;font-weight:600">Total Non-Exchange Revenue</td><td></td><td class="num" style="font-weight:600">${fmt(nonExchTotal)}</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td colspan="4" style="height:8px"></td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50);color:var(--navy)">Revenue from Exchange Transactions</td></tr>
+      ${Object.keys(rbs).filter(k=>!nonExch.includes(k)).map((k,i)=>`<tr><td style="padding-left:20px">${k==='OPD'||k==='IPD'||k==='Lab'||k==='Pharmacy'||k==='Radiology'||k==='Maternity'||k==='Theatre'?'Rendering of Services – '+k:k==='NHIF/SHA'?'Rendering of Services – NHIF/SHA Capitation':'Rendering of Services – '+k}</td><td style="color:var(--g500);font-size:11px">${i+11}</td><td class="num">${fmt(rbs[k])}</td><td class="num" style="color:var(--g300)">—</td></tr>`).join('')}
+      <tr><td style="padding-left:20px;font-weight:600">Total Exchange Revenue</td><td></td><td class="num" style="font-weight:600">${fmt(exchTotal)}</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td class="bold">TOTAL REVENUE</td><td></td><td class="num bold" style="color:var(--green)">${fmt(revTotal)}</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td colspan="4" style="height:10px"></td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50);color:var(--navy)">Expenses</td></tr>
+      ${Object.keys(pbv).map((v,i)=>`<tr><td style="padding-left:20px">${v}</td><td style="color:var(--g500);font-size:11px">${i+15}</td><td class="num">${fmt(pbv[v])}</td><td class="num" style="color:var(--g300)">—</td></tr>`).join('')}
+      ${depn>0?`<tr><td style="padding-left:20px">Depreciation and Amortization</td><td style="color:var(--g500);font-size:11px">18</td><td class="num">${fmt(depn)}</td><td class="num" style="color:var(--g300)">—</td></tr>`:''}
+      <tr><td class="bold">TOTAL EXPENSES</td><td></td><td class="num bold" style="color:var(--red)">${fmt(totalExpenses)}</td><td class="num" style="color:var(--g300)">—</td></tr>
       </tbody>
-      <tfoot><tr><td class="bold">${surplus>=0?'SURPLUS':'DEFICIT'} FOR THE PERIOD</td>
-      <td class="num bold" style="color:${surplus>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(surplus))}</td></tr></tfoot>
-      </table></div>`;
-    // Statement of Financial Position
-    document.getElementById('rpt-sofp-c').innerHTML=hdr+`
-      <div class="rpt-title">Statement of Financial Position</div>
-      <div class="rpt-subtitle">As at ${to}</div>
-      <div class="report-grid">
-      <div><div class="tw"><table><thead><tr><th colspan="2">ASSETS</th></tr></thead>
+      <tfoot><tr><td class="bold">${surplus>=0?'NET SURPLUS':'NET DEFICIT'} FOR THE PERIOD</td><td></td><td class="num bold" style="color:${surplus>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(surplus))}</td><td class="num" style="color:var(--g300)">—</td></tr></tfoot>
+      </table></div>${sigBlock}`;
+    // STATEMENT OF FINANCIAL POSITION
+    const cashBal=rec-pay;const netAssets=cashBal+recvbles-payables;
+    document.getElementById('rpt-sofp-c').innerHTML=`${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Statement of Financial Position</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">As at: ${to}</div>
+      <div class="rgrid">
+      <div><div class="tw"><table><thead><tr><th colspan="2">ASSETS</th><th class="num">KES</th><th class="num">KES</th></tr></thead>
       <tbody>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">Current Assets</td></tr>
-      <tr><td style="padding-left:20px">Cash and Bank</td><td class="num">${fmt(rec-pay)}</td></tr>
-      <tr><td style="padding-left:20px">Accounts Receivable</td><td class="num">${fmt(recv)}</td></tr>
-      </tbody>
-      <tfoot><tr><td class="bold">TOTAL ASSETS</td><td class="num bold">${fmt(rec-pay+recv)}</td></tr></tfoot>
-      </table></div></div>
-      <div><div class="tw"><table><thead><tr><th colspan="2">LIABILITIES &amp; EQUITY</th></tr></thead>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Current Assets</td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Cash and Cash Equivalents</td><td class="num">${fmt(cashBal)}</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Prepayments and Advances</td><td class="num">—</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Receivables from Exchange Transactions</td><td class="num">${fmt(recvbles)}</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Receivables from Non-Exchange Transactions</td><td class="num">—</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Inventories</td><td class="num">—</td><td></td></tr>
+      </tbody><tfoot><tr><td colspan="2" class="bold">Total Assets</td><td></td><td class="num bold">${fmt(cashBal+recvbles)}</td></tr></tfoot></table></div></div>
+      <div><div class="tw"><table><thead><tr><th colspan="2">LIABILITIES & NET ASSETS</th><th class="num">KES</th><th class="num">KES</th></tr></thead>
       <tbody>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">Current Liabilities</td></tr>
-      <tr><td style="padding-left:20px">Accrued Payables</td><td class="num">${fmt(payables)}</td></tr>
-      <tr><td colspan="2" style="height:8px"></td></tr>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">Net Assets</td></tr>
-      <tr><td style="padding-left:20px">Net Position</td><td class="num">${fmt(rec-pay+recv-payables)}</td></tr>
-      </tbody>
-      <tfoot><tr><td class="bold">TOTAL</td><td class="num bold">${fmt(payables+(rec-pay+recv-payables))}</td></tr></tfoot>
-      </table></div></div></div>`;
-    // Cash Flow
-    document.getElementById('rpt-scf-c').innerHTML=hdr+`
-      <div class="rpt-title">Statement of Cash Flows</div>
-      <div class="rpt-subtitle">For the Period: ${period} (Direct Method)</div>
-      <div class="tw"><table><thead><tr><th>Description</th><th class="num">KES</th></tr></thead>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Current Liabilities</td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Trade and Other Payables</td><td class="num">${fmt(payables)}</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Provisions</td><td class="num">—</td><td></td></tr>
+      <tr><td colspan="2" style="font-weight:600;padding-left:20px">Total Current Liabilities</td><td></td><td class="num" style="font-weight:600">${fmt(payables)}</td></tr>
+      <tr><td colspan="4" style="height:8px"></td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Net Assets</td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Accumulated Surplus/(Deficit)</td><td class="num">${fmt(surplus)}</td><td></td></tr>
+      <tr><td colspan="2" style="padding-left:20px">Capital Fund</td><td class="num">—</td><td></td></tr>
+      </tbody><tfoot><tr><td colspan="2" class="bold">Total Liabilities & Net Assets</td><td></td><td class="num bold">${fmt(payables+netAssets)}</td></tr></tfoot></table></div></div>
+      </div>${sigBlock}`;
+    // STATEMENT OF CHANGES IN NET ASSETS
+    document.getElementById('rpt-scna-c').innerHTML=`${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Statement of Changes in Net Assets</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">For the Period: ${period}</div>
+      <div class="tw"><table><thead><tr><th>Description</th><th class="num">Revaluation Reserve</th><th class="num">Accumulated Surplus/(Deficit)</th><th class="num">Capital Fund</th><th class="num">Total</th></tr></thead>
       <tbody>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">OPERATING ACTIVITIES</td></tr>
-      <tr><td style="padding-left:20px">Cash Receipts from Services</td><td class="num" style="color:var(--green)">${fmt(rec)}</td></tr>
-      <tr><td style="padding-left:20px">Cash Payments for Expenses</td><td class="num" style="color:var(--red)">(${fmt(pay)})</td></tr>
-      <tr><td class="bold" style="padding-left:20px">Net Cash from Operating Activities</td>
-      <td class="num bold" style="color:${rec-pay>=0?'var(--green)':'var(--red)'}">${fmt(rec-pay)}</td></tr>
-      <tr><td colspan="2" style="height:10px"></td></tr>
-      <tr><td class="bold" colspan="2" style="background:var(--gray50);color:var(--navy)">FINANCING ACTIVITIES</td></tr>
-      <tr><td style="padding-left:20px">Government Grants (FIF)</td><td class="num">${fmt(rbs['FIF']||0)}</td></tr>
-      <tr><td style="padding-left:20px">Donor Funding (DANIDA)</td><td class="num">${fmt(rbs['DANIDA']||0)}</td></tr>
+      <tr><td class="bold">At July 1 (Opening)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num bold">—</td></tr>
+      <tr><td style="padding-left:20px">Revaluation Gain</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td style="padding-left:20px">${surplus>=0?'Surplus':'Deficit'} for the Period</td><td class="num">—</td><td class="num" style="color:${surplus>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(surplus))}</td><td class="num">—</td><td class="num" style="color:${surplus>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(surplus))}</td></tr>
+      <tr><td style="padding-left:20px">Capital/Development Grants</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
       </tbody>
-      <tfoot><tr><td class="bold">NET CHANGE IN CASH</td>
-      <td class="num bold" style="color:${rec-pay>=0?'var(--green)':'var(--red)'}">${fmt(rec-pay)}</td></tr></tfoot>
-      </table></div>`;
-    // Budget vs Actual
-    const brows=vb.map(b=>{const actual=ve.filter(e=>e.vote===b.vote).reduce((s,e)=>s+e.amount,0);const variance=b.budget-actual;const pct=b.budget>0?(actual/b.budget*100):0;return{vote:b.vote,budget:b.budget,actual,variance,pct}});
-    const tB=brows.reduce((s,r)=>s+r.budget,0),tA=brows.reduce((s,r)=>s+r.actual,0),tV=brows.reduce((s,r)=>s+r.variance,0);
-    document.getElementById('rpt-bva-c').innerHTML=hdr+`
-      <div class="rpt-title">Budget vs Actual Report</div>
-      <div class="rpt-subtitle">For the Period: ${period}</div>
-      <div class="tw"><table><thead><tr><th>Vote Head</th><th class="num">Budget</th><th class="num">Actual</th><th class="num">Variance</th><th class="num">% Used</th><th>Status</th></tr></thead>
+      <tfoot><tr><td class="bold">At ${to} (Closing)</td><td class="num bold">—</td><td class="num bold" style="color:${surplus>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(surplus))}</td><td class="num bold">—</td><td class="num bold">${fmt(Math.abs(surplus))}</td></tr></tfoot>
+      </table></div>${sigBlock}`;
+    // CASH FLOW
+    document.getElementById('rpt-scf-c').innerHTML=`${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Statement of Cash Flows</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">For the Period: ${period} (Direct Method)</div>
+      <div class="tw"><table><thead><tr><th>Description</th><th>Note</th><th class="num">Current Period (KES)</th><th class="num">Comparative (KES)</th></tr></thead>
+      <tbody>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Cash Flows from Operating Activities</td></tr>
+      <tr><td style="padding-left:20px;font-weight:600">Receipts:</td><td colspan="3"></td></tr>
+      ${Object.keys(rbs).map(k=>`<tr><td style="padding-left:30px">${k==='County Transfer'?'Transfers from County Government':k==='NHIF/SHA'?'NHIF/SHA Capitation':'Revenue – '+k}</td><td></td><td class="num">${fmt(rbs[k])}</td><td class="num" style="color:var(--g300)">—</td></tr>`).join('')}
+      <tr><td style="padding-left:20px;font-weight:600">Total Receipts</td><td></td><td class="num" style="font-weight:600">${fmt(rec)}</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td colspan="4" style="height:6px"></td></tr>
+      <tr><td style="padding-left:20px;font-weight:600">Payments:</td><td colspan="3"></td></tr>
+      ${Object.keys(pbv).map(v=>`<tr><td style="padding-left:30px">${v}</td><td></td><td class="num">(${fmt(pbv[v])})</td><td class="num" style="color:var(--g300)">—</td></tr>`).join('')}
+      <tr><td style="padding-left:20px;font-weight:600">Total Payments</td><td></td><td class="num" style="font-weight:600;color:var(--red)">(${fmt(pay)})</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td class="bold" style="padding-left:10px">Net Cash from Operating Activities</td><td>43</td><td class="num bold" style="color:${rec-pay>=0?'var(--green)':'var(--red)'}">${fmt(rec-pay)}</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td colspan="4" style="height:10px"></td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Cash Flows from Investing Activities</td></tr>
+      <tr><td style="padding-left:20px">Purchase of Property, Plant and Equipment</td><td></td><td class="num">—</td><td class="num" style="color:var(--g300)">—</td></tr>
+      <tr><td class="bold" colspan="4" style="background:var(--g50)">Cash Flows from Financing Activities</td></tr>
+      <tr><td style="padding-left:20px">Government Capital Grants</td><td></td><td class="num">—</td><td class="num" style="color:var(--g300)">—</td></tr>
+      </tbody>
+      <tfoot><tr><td class="bold">NET INCREASE/(DECREASE) IN CASH</td><td></td><td class="num bold" style="color:${rec-pay>=0?'var(--green)':'var(--red)'}">${fmt(rec-pay)}</td><td class="num" style="color:var(--g300)">—</td></tr></tfoot>
+      </table></div>${sigBlock}`;
+    // BUDGET VS ACTUAL
+    const brows=vb.map(v=>{const spent=ve.filter(e=>e.vote===v.name).reduce((s,e)=>s+e.amount,0);const variance=v.amount-spent;const pct=v.amount>0?(spent/v.amount*100):0;return{code:v.code,vote:v.name,cat:v.cat,budget:v.amount,spent,variance,pct}});
+    const tB2=brows.reduce((s,r)=>s+r.budget,0),tS2=brows.reduce((s,r)=>s+r.spent,0),tV2=brows.reduce((s,r)=>s+r.variance,0);
+    document.getElementById('rpt-bva-c').innerHTML=`${hdr()}
+      <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Statement of Comparison of Budget and Actual Amounts</div>
+      <div style="font-size:12px;color:var(--g500);margin-bottom:14px">For the Year Ended: ${to} | AIE No. TCG/MOH/LCRH/2025/2026/001</div>
+      <div class="tw"><table><thead><tr><th>Code</th><th>Vote Item</th><th>Category</th><th class="num">Original Budget (KES)</th><th class="num">Actual Spent (KES)</th><th class="num">Variance (KES)</th><th class="num">% Used</th><th>Status</th></tr></thead>
       <tbody>${brows.map(r=>`<tr>
-      <td>${r.vote}</td><td class="num">${fmt(r.budget)}</td><td class="num">${fmt(r.actual)}</td>
-      <td class="num" style="color:${r.variance<0?'var(--red)':'var(--green)'}">${r.variance>=0?'+':''}${fmt(r.variance)}</td>
-      <td class="num">${r.pct.toFixed(1)}%</td>
-      <td><span class="badge ${r.pct>90?'br':r.pct>75?'ba':'bg'}">${r.pct>90?'Critical':r.pct>75?'Caution':'On Track'}</span></td>
+        <td><code class="ic">${r.code}</code></td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vote}">${r.vote}</td>
+        <td><span class="badge bgr" style="font-size:10px">${r.cat}</span></td>
+        <td class="num">${fmt(r.budget)}</td><td class="num">${fmt(r.spent)}</td>
+        <td class="num" style="color:${r.variance<0?'var(--red)':'var(--green)'}">${r.variance>=0?'+':''}${fmt(r.variance)}</td>
+        <td class="num">${r.pct.toFixed(1)}%</td>
+        <td><span class="badge ${r.pct>90?'br':r.pct>75?'ba':'bg'}">${r.pct>90?'Critical':r.pct>75?'Caution':'On Track'}</span></td>
       </tr>`).join('')}</tbody>
-      <tfoot><tr><td class="bold">TOTAL</td><td class="num bold">${fmt(tB)}</td><td class="num bold">${fmt(tA)}</td>
-      <td class="num bold" style="color:${tV<0?'var(--red)':'var(--green)'}">${tV>=0?'+':''}${fmt(tV)}</td>
-      <td colspan="2"></td></tr></tfoot>
-      </table></div>`;
+      <tfoot><tr><td colspan="3" class="bold">TOTAL</td><td class="num bold">${fmt(tB2)}</td><td class="num bold">${fmt(tS2)}</td><td class="num bold" style="color:${tV2<0?'var(--red)':'var(--green)'}">${tV2>=0?'+':''}${fmt(tV2)}</td><td colspan="2"></td></tr></tfoot>
+      </table></div>${sigBlock}`;
     toast('Reports generated!','success');
   }catch(e){toast('Error: '+e.message,'error');console.error(e)}
 }
 
-// SETTINGS
+// ════ MONTHLY COMPARATIVE ════
+async function genMonthly(){
+  const yr=parseInt(document.getElementById('mc-fy').value);
+  toast('Building monthly comparative…');
+  try{
+    const[cs,ves,rs]=await Promise.all([db.collection('cashbook').get(),db.collection('vote_entries').get(),db.collection('revenue').get()]);
+    const months=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+    const mkeys=months.map((m,i)=>{const mo=i<6?yr:yr+1;const moNum=String(i<6?i+7:i-5).padStart(2,'0');return`${mo}-${moNum}`});
+    const cbData=cs.docs.map(d=>d.data());const veData=ves.docs.map(d=>d.data());const revData=rs.docs.map(d=>d.data());
+    const rows=[];
+    // Receipts row
+    const recRow={label:'Total Receipts',vals:mkeys.map(mk=>cbData.filter(r=>r.type==='receipt'&&r.date?.startsWith(mk)).reduce((s,r)=>s+r.amount,0))};
+    const payRow={label:'Total Payments',vals:mkeys.map(mk=>cbData.filter(r=>r.type==='payment'&&r.date?.startsWith(mk)).reduce((s,r)=>s+r.amount,0))};
+    const netRow={label:'Net Cash Flow',vals:recRow.vals.map((r,i)=>r-payRow.vals[i])};
+    const revRow={label:'Revenue Collected',vals:mkeys.map(mk=>revData.filter(r=>r.date?.startsWith(mk)).reduce((s,r)=>s+r.amount,0))};
+    const hosp=document.getElementById('s-hn')?.value||'Lodwar County Referral Hospital';
+    document.getElementById('mc-content').innerHTML=`
+      <div class="sc"><div class="scb">
+        <div class="rh"><div class="rhn">${hosp}</div><div class="rhd">Department of Health Services and Sanitation · Turkana County Government</div></div>
+        <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:2px">Monthly Comparative Report</div>
+        <div style="font-size:12px;color:var(--g500);margin-bottom:14px">Financial Year ${yr}/${yr+1} (July ${yr} – June ${yr+1})</div>
+        <div class="tw"><table>
+          <thead><tr><th>Description</th>${months.map((m,i)=>`<th class="num">${m}<br><span style="font-size:10px;font-weight:400">${mkeys[i].substring(0,7)}</span></th>`).join('')}<th class="num">TOTAL</th></tr></thead>
+          <tbody>
+          ${[recRow,payRow,netRow,revRow].map((row,ri)=>{
+            const total=row.vals.reduce((s,v)=>s+v,0);
+            const isNet=ri===2;const isNeg=isNet&&total<0;
+            return`<tr style="${ri===2?'background:var(--g50)':''}">
+              <td class="bold">${row.label}</td>
+              ${row.vals.map(v=>`<td class="num" style="font-size:12px;color:${isNet?(v>=0?'var(--green)':'var(--red)'):(ri===1?'var(--red)':'var(--green)')}">${fmt(v)}</td>`).join('')}
+              <td class="num bold" style="color:${isNet?(total>=0?'var(--green)':'var(--red)'):(ri===1?'var(--red)':'var(--green)')}">${fmt(Math.abs(total))}</td></tr>`;
+          }).join('')}
+          </tbody>
+        </table></div>
+        <div class="tw" style="margin-top:20px"><table>
+          <thead><tr><th>Expenditure by Category</th>${months.map((m,i)=>`<th class="num">${m}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
+          <tbody>
+          ${['Operations & Maintenance','Medical & Clinical Supplies','General Supplies','Contracted Services','Maintenance','Capital Expenditure'].map(cat=>{
+            const catVotes=veData.filter(e=>{const v=allVotes.find(x=>x.name===e.vote);return v&&v.cat===cat});
+            const vals=mkeys.map(mk=>catVotes.filter(e=>e.date?.startsWith(mk)).reduce((s,e)=>s+e.amount,0));
+            const total=vals.reduce((s,v)=>s+v,0);
+            if(total===0)return'';
+            return`<tr><td>${cat}</td>${vals.map(v=>`<td class="num" style="font-size:12px">${v>0?fmt(v):'—'}</td>`).join('')}<td class="num bold">${fmt(total)}</td></tr>`;
+          }).filter(Boolean).join('')}
+          </tbody>
+        </table></div>
+      </div></div>`;
+    toast('Monthly comparative ready!','success');
+  }catch(e){toast('Error: '+e.message,'error');console.error(e)}
+}
+
+// ════ VOTE MANAGEMENT ════
+async function loadVoteManagement(){
+  const snap=await db.collection('votes').orderBy('order').get();
+  allVotes=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const cats=[...new Set(allVotes.map(v=>v.cat))];
+  const container=document.getElementById('votes-list');
+  const totBudget=allVotes.reduce((s,v)=>s+v.amount,0);
+  container.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--g50);border-radius:var(--r);margin-bottom:12px;font-size:13px"><span>Total votes: <strong>${allVotes.length}</strong></span><span>Total AIE: <strong>KES ${fmt(totBudget)}</strong></span></div>`+
+  cats.map(cat=>{
+    const catVotes=allVotes.filter(v=>v.cat===cat);
+    const catTotal=catVotes.reduce((s,v)=>s+v.amount,0);
+    return`<div style="margin-bottom:12px;border:1px solid var(--g100);border-radius:var(--r);overflow:hidden">
+      <div class="vcat-header">${cat} — ${catVotes.length} items — KES ${fmt(catTotal)}</div>
+      ${catVotes.map(v=>`
+        <div class="vote-row">
+          <span class="vote-code">${v.code}</span>
+          <span class="vote-name">${v.name}</span>
+          <span class="vote-amt">${fmt(v.amount)}</span>
+          <button class="btn bgh bsm" onclick="editVote('${v.id}')" style="padding:4px 9px;font-size:11px">Edit</button>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function editVote(id){
+  editVoteId=id;
+  const v=allVotes.find(x=>x.id===id);
+  if(!v)return;
+  document.getElementById('avm-title').textContent='Edit Vote Item';
+  document.getElementById('av-code').value=v.code;
+  document.getElementById('av-name').value=v.name;
+  document.getElementById('av-cat').value=v.cat;
+  document.getElementById('av-amt').value=v.amount;
+  document.getElementById('av-fy').value=v.fy||'2025/2026';
+  document.getElementById('av-del-btn').style.display='';
+  openModal('add-vote-modal');
+}
+function openAddVoteModal(){
+  editVoteId=null;
+  document.getElementById('avm-title').textContent='Add New Vote Item';
+  ['av-code','av-name','av-amt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('av-fy').value='2025/2026';
+  document.getElementById('av-del-btn').style.display='none';
+  openModal('add-vote-modal');
+}
+async function saveVote(){
+  const data={code:document.getElementById('av-code').value.trim(),name:document.getElementById('av-name').value.trim(),cat:document.getElementById('av-cat').value,amount:parseFloat(document.getElementById('av-amt').value)||0,fy:document.getElementById('av-fy').value.trim()};
+  if(!data.code||!data.name){toast('Code and name required.','error');return}
+  try{
+    if(editVoteId)await db.collection('votes').doc(editVoteId).update(data);
+    else await db.collection('votes').add({...data,order:allVotes.length,createdAt:new Date().toISOString()});
+    toast(editVoteId?'Vote updated!':'Vote added!','success');
+    closeModal('add-vote-modal');loadVoteManagement();
+  }catch(e){toast(e.message,'error')}
+}
+async function deleteVote(){
+  if(!editVoteId)return;
+  if(!confirm('Delete this vote item? This will also affect any expenditure entries linked to it.'))return;
+  try{await db.collection('votes').doc(editVoteId).delete();toast('Vote deleted.','success');closeModal('add-vote-modal');loadVoteManagement()}
+  catch(e){toast(e.message,'error')}
+}
+
+// ════ SETTINGS ════
 async function loadSettings(){
   try{
     const s=await db.collection('users').get();
-    const users=s.docs.map(d=>d.data());
-    document.getElementById('users-tbody').innerHTML=users.length?users.map(u=>`<tr>
-      <td>${u.name}</td><td>${u.email}</td>
-      <td><span class="badge bb">${u.role}</span></td>
-      <td>${u.createdAt?new Date(u.createdAt).toLocaleDateString('en-KE'):'—'}</td>
-    </tr>`).join(''):'<tr><td colspan="4" class="loading">No users found</td></tr>';
-    const cfg=loadCfg();
-    if(cfg)document.getElementById('s-cfg-info').textContent=`Project: ${cfg.projectId}\nAuth Domain: ${cfg.authDomain}`;
+    document.getElementById('us-tb').innerHTML=s.docs.map(d=>d.data()).map(u=>`<tr><td>${u.name}</td><td>${u.email}</td><td><span class="badge bb">${u.role}</span></td><td>${u.createdAt?new Date(u.createdAt).toLocaleDateString('en-KE'):'—'}</td></tr>`).join('');
+    const cfg=loadCfg();if(cfg)document.getElementById('cfg-info').textContent=`Project: ${cfg.projectId}\nAuth Domain: ${cfg.authDomain}`;
   }catch(e){console.error(e)}
 }
 
-// UTILS
-async function delEntry(coll,id,reload){
+// ════ UTILS ════
+async function del(coll,id,reload){
   if(!confirm('Delete this entry? This cannot be undone.'))return;
   try{await db.collection(coll).doc(id).delete();toast('Deleted.','success');reload()}catch(e){toast(e.message,'error')}
 }
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
-function exportCSV(mod){
+function expCSV(mod){
   let rows=[],hdr=[],fn=mod+'_export.csv';
-  if(mod==='cashbook'){hdr=['Date','Reference','Type','Description','IFMIS','Vote','Bank','Amount','Cheque','Remarks'];rows=allCB.map(r=>[r.date,r.ref,r.type,r.desc,r.ifmis,r.vote,r.bank,r.amount,r.cheque,r.remarks])}
-  else if(mod==='votebook'){hdr=['Date','Reference','Vote','Description','Supplier','Status','Amount'];rows=allVE.map(r=>[r.date,r.ref,r.vote,r.desc,r.supplier,r.status,r.amount])}
-  else if(mod==='accruals'){hdr=['Date','Reference','Type','Description','Debit','Credit','Amount','Period','Status'];rows=allAcc.map(r=>[r.date,r.ref,r.type,r.desc,r.debit,r.credit,r.amount,r.period,r.status])}
-  else if(mod==='revenue'){hdr=['Date','Receipt No','Stream','Description','Payer','Bank','Amount'];rows=allRev.map(r=>[r.date,r.rcpt,r.stream,r.desc,r.payer,r.bank,r.amount])}
-  else if(mod==='claims'){hdr=['Date','Reference','Insurer','Description','Claimed','Approved','Received','Status'];rows=allClaims.map(r=>[r.date,r.ref,r.insurer,r.desc,r.claimed,r.approved,r.received,r.status])}
+  if(mod==='cb'){hdr=['Date','Reference','Type','Description','IFMIS','Vote','Bank','Amount','Cheque','Remarks'];rows=allCB.map(r=>[r.date,r.ref,r.type,r.desc,r.ifmis,r.vote,r.bank,r.amount,r.cheque,r.remarks])}
+  else if(mod==='vb'){hdr=['Date','Reference','IFMIS','Vote','Description','Supplier','Status','Amount'];rows=allVE.map(r=>[r.date,r.ref,r.ifmis,r.vote,r.desc,r.supplier,r.status,r.amount])}
+  else if(mod==='ac'){hdr=['Date','Reference','Type','Description','Debit','Credit','Amount','Period','Status'];rows=allAcc.map(r=>[r.date,r.ref,r.type,r.desc,r.debit,r.credit,r.amount,r.period,r.status])}
+  else if(mod==='rv'){hdr=['Date','Receipt No','Stream','Description','Payer','Bank','Amount'];rows=allRev.map(r=>[r.date,r.rcpt,r.stream,r.desc,r.payer,r.bank,r.amount])}
+  else if(mod==='cl'){hdr=['Date','Reference','Insurer','Description','Claimed','Approved','Received','Status'];rows=allClm.map(r=>[r.date,r.ref,r.insurer,r.desc,r.claimed,r.approved,r.received,r.status])}
+  else if(mod==='acb'){hdr=['Date','Reference','Description','Vote','Bank','Receipts','Payments','Balance'];let b=0;rows=allCB.filter(r=>r.date?.startsWith(document.getElementById('acb-mon').value)).map(r=>{if(r.type==='receipt')b+=r.amount;else b-=r.amount;return[r.date,r.ref,r.desc,r.vote,r.bank,r.type==='receipt'?r.amount:'',r.type==='payment'?r.amount:'',b]})}
+  else if(mod==='lv'){const vid=document.getElementById('lv-sel').value;const v=allVotes.find(x=>x.id===vid);hdr=['Date','Reference','Description','Supplier','Status','Expenditure','Budget','Balance'];let b=v?v.amount:0;rows=allVE.filter(e=>v&&e.vote===v.name).map(e=>{b-=e.amount;return[e.date,e.ref,e.desc,e.supplier,e.status,e.amount,'',b]})}
   const csv=[hdr,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();
   toast('CSV exported!','success');
 }
 
-// INIT
+// ════ INIT ════
 window.addEventListener('DOMContentLoaded',()=>{
   const cfg=loadCfg();
-  if(cfg){document.getElementById('cfg-section').style.display='none';document.getElementById('auth-panels').style.display='block';initFirebase(cfg)}
+  if(cfg){document.getElementById('cfg-sec').style.display='none';document.getElementById('auth-panels').style.display='block';initFB(cfg)}
+  // Override add vote button
+  document.querySelector('[onclick="openModal(\'add-vote-modal\')"]')?.addEventListener('click',e=>{e.stopPropagation();openAddVoteModal()},true);
 });
 </script>
 </body>

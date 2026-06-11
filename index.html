@@ -320,7 +320,16 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
               <div class="fr"><label>Type</label><select id="cb-tp" onchange="updateCBVote()"><option value="receipt">Receipt</option><option value="payment">Payment</option></select></div>
               <div class="fr s3"><label>Description / Narration</label><input id="cb-ds" placeholder="e.g. NHIF capitation payment – December 2025"/></div>
               <div class="fr"><label>IFMIS Vote Code</label><input id="cb-ic" placeholder="e.g. 2211001"/></div>
-              <div class="fr"><label>Vote / Category</label><select id="cb-vt"></select></div>
+              <div class="fr"><label>Vote / Category</label><select id="cb-vt">
+                <option value="Revenue – OPD">Revenue – OPD</option>
+                <option value="Revenue – IPD">Revenue – IPD</option>
+                <option value="Revenue – NHIF/SHA">Revenue – NHIF/SHA</option>
+                <option value="Revenue – Insurance">Revenue – Insurance</option>
+                <option value="Revenue – FIF">Revenue – FIF</option>
+                <option value="Revenue – DANIDA">Revenue – DANIDA</option>
+                <option value="Revenue – County Transfer">Revenue – County Transfer</option>
+                <option value="Revenue – Other">Revenue – Other</option>
+              </select></div>
               <div class="fr"><label>Amount (KES)</label><input type="number" id="cb-am" step="0.01"/></div>
               <div class="fr"><label>Bank / Fund</label>
                 <select id="cb-bk"><option>KCB Main Account</option><option>FIF Account</option><option>NHIF/SHA Account</option><option>Petty Cash</option></select>
@@ -349,7 +358,9 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
       <!-- VOTE BOOK -->
       <div id="page-votebook" class="page">
         <div class="sc">
-          <div class="sch"><h3>AIE Budget vs Actual Summary</h3><button class="btn bnn bsm" onclick="openModal('vm')">+ Record Expenditure</button></div>
+          <div class="sch"><h3>AIE Budget vs Actual Summary</h3>
+            <button class="btn bnn bsm" onclick="openVEModal()">+ Record Expenditure</button>
+          </div>
           <div class="scb" style="padding:0"><div class="tw"><table>
             <thead><tr><th>Code</th><th>Vote Item</th><th>Category</th><th class="num">AIE Budget</th><th class="num">Committed</th><th class="num">Accrued</th><th class="num">Paid</th><th class="num">Total Spent</th><th class="num">Balance</th><th class="num">% Used</th><th>Status</th></tr></thead>
             <tbody id="vb-tb"></tbody>
@@ -887,8 +898,11 @@ async function onAuth(user){
     document.getElementById('url').textContent=userProfile.role;
     document.getElementById('uav').textContent=userProfile.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     initUI();
-    // Seed votes if needed
+    // Seed votes if needed, then pre-load into memory
     await seedVotes();
+    const preVotes=await db.collection('votes').orderBy('order').get();
+    allVotes=preVotes.docs.map(d=>({id:d.id,...d.data()}));
+    updateCBVote(); // populate cash book dropdown immediately
     nav('dashboard');
   }else{
     document.getElementById('app').classList.remove('visible');
@@ -938,14 +952,23 @@ function initUI(){
 }
 
 // ════ CASH BOOK ════
-async function updateCBVote(){
+function updateCBVote(){
   const t=document.getElementById('cb-tp').value;
   const vs=document.getElementById('cb-vt');
   if(t==='receipt'){
     vs.innerHTML='<option value="Revenue – OPD">Revenue – OPD</option><option value="Revenue – IPD">Revenue – IPD</option><option value="Revenue – NHIF/SHA">Revenue – NHIF/SHA</option><option value="Revenue – Insurance">Revenue – Insurance</option><option value="Revenue – FIF">Revenue – FIF</option><option value="Revenue – DANIDA">Revenue – DANIDA</option><option value="Revenue – County Transfer">Revenue – County Transfer</option><option value="Revenue – Other">Revenue – Other</option>';
   }else{
-    if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
-    vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+    if(allVotes.length){
+      vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+    }else{
+      // Votes not loaded yet — load them then populate
+      vs.innerHTML='<option>Loading votes…</option>';
+      db.collection('votes').orderBy('order').get().then(s=>{
+        allVotes=s.docs.map(d=>({id:d.id,...d.data()}));
+        vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+        populateVoteSelects();
+      });
+    }
   }
 }
 async function saveCB(){
@@ -957,14 +980,15 @@ function clrCB(){['cb-rf','cb-ds','cb-ic','cb-ch','cb-rm'].forEach(id=>document.
 async function loadCB(){
   document.getElementById('cb-tb').innerHTML='<tr><td colspan="10" class="loading"><span class="sp"></span>Loading…</td></tr>';
   try{
-    // Load votes first if not already loaded
-    if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
+    if(!allVotes.length){
+      const vs=await db.collection('votes').orderBy('order').get();
+      allVotes=vs.docs.map(d=>({id:d.id,...d.data()}));
+    }
     const s=await db.collection('cashbook').orderBy('date','desc').get();
     allCB=s.docs.map(d=>({id:d.id,...d.data()}));
-    // Pre-populate vote dropdown based on current type selection
-    await updateCBVote();
+    // Populate vote dropdown based on current type
+    updateCBVote();
     renderCB();
-    populateCBVoteOptions();
   }catch(e){toast(e.message,'error')}
 }
 function renderCB(){
@@ -996,6 +1020,16 @@ function populateCBVoteOptions(){
 }
 
 // ════ VOTE BOOK ════
+async function openVEModal(){
+  // Always ensure votes are loaded before opening modal
+  if(!allVotes.length){
+    const s=await db.collection('votes').orderBy('order').get();
+    allVotes=s.docs.map(d=>({id:d.id,...d.data()}));
+  }
+  populateVoteSelects();
+  document.getElementById('ve-dt').value=today();
+  openModal('vm');
+}
 async function saveVE(){
   const e={date:document.getElementById('ve-dt').value,ref:document.getElementById('ve-rf').value.trim(),vote:document.getElementById('ve-vt').value,ifmis:document.getElementById('ve-ic').value.trim(),desc:document.getElementById('ve-ds').value.trim(),supplier:document.getElementById('ve-sp').value.trim(),amount:parseFloat(document.getElementById('ve-am').value)||0,status:document.getElementById('ve-st').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
   if(!e.date||!e.amount){toast('Date and amount required.','error');return}
@@ -1036,19 +1070,21 @@ function renderVB(){
   document.getElementById('vb-ts').textContent=fmt(totC+totA+totP);
   document.getElementById('vb-tbal').textContent=fmt(totB-(totC+totA+totP));
 
-  // Ledger
+  // Ledger — show ALL entries by default, filter by selected vote
   let lrows=allVE;
   if(vfil)lrows=lrows.filter(r=>r.vote===vfil);
   if(sfil)lrows=lrows.filter(r=>r.status===sfil);
   document.getElementById('vb-ltb').innerHTML=lrows.length?lrows.map(e=>{
     const sc={Committed:'ba',Accrued:'bb',Paid:'bg'}[e.status]||'bgr';
-    return`<tr><td>${e.date}</td><td>${e.ref||'—'}</td><td><code class="ic">${e.ifmis||'—'}</code></td>
+    return`<tr>
+    <td>${e.date}</td><td>${e.ref||'—'}</td>
+    <td><code class="ic">${e.ifmis||'—'}</code></td>
     <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.vote}">${e.vote}</td>
     <td>${e.desc}</td><td>${e.supplier||'—'}</td>
     <td><span class="badge ${sc}">${e.status}</span></td>
-    <td class="num">${fmt(e.amount)}</td>
-    <td><button class="btn bdr bsm bic" onclick="del('vote_entries','${e.id}',loadVB)">✕</button></td></tr>`;
-  }).join(''):'<tr><td colspan="9"><div class="empty"><p>No entries yet</p></div></td></tr>';
+    <td class="num bold">${fmt(e.amount)}</td>
+    <td><button class="btn bdr bsm bic" title="Delete" onclick="if(confirm('Delete this entry? Cannot be undone.'))del('vote_entries','${e.id}',loadVB)">✕</button></td></tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">🗳️</div><p>No entries yet. Click "+ Record Expenditure" to add one.</p></div></td></tr>';
 }
 function autoFillVoteCode(){
   const vname=document.getElementById('ve-vt').value;

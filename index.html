@@ -527,7 +527,9 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
         <div class="sc">
           <div class="sch">
             <h3>Analytical Cash Book Ledger</h3>
-            <select class="sel-sm" id="cb-fm" onchange="renderACB()"></select>
+            <select class="sel-sm" id="cb-fm" onchange="renderACB()">
+              <option value="">All Months</option>
+            </select>
             <select class="sel-sm" id="acb-bk" onchange="renderACB()">
               <option value="">All Banks</option>
               <option>KCB Main Account</option>
@@ -951,7 +953,10 @@ async function doReg(){
     toast('Welcome, '+nm+'!','success');
   }catch(e){document.getElementById('rg-err').textContent=e.message}
 }
-async function doLogout(){await auth.signOut()}
+async function doLogout(){
+  if(acbListener)acbListener(); // detach real-time listener
+  await auth.signOut();
+}
 async function onAuth(user){
   if(user){
     curUser=user;
@@ -1013,7 +1018,7 @@ function initUI(){
   document.getElementById('rpt-to').value=t;
   // Month filters
   const mo=[];for(let i=0;i<14;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);mo.push({v:d.toISOString().substring(0,7),l:d.toLocaleString('default',{month:'long',year:'numeric'})})}
-  ['cb-fm','acb-mon'].forEach(id=>{const s=document.getElementById(id);if(s)s.innerHTML=mo.map(m=>`<option value="${m.v}">${m.l}</option>`).join('')});
+  ['cb-fm','acb-mon'].forEach(id=>{const s=document.getElementById(id);if(s)s.innerHTML='<option value="">All Months</option>'+mo.map(m=>`<option value="${m.v}">${m.l}</option>`).join('')});
 }
 
 // ════ CASH BOOK ════
@@ -1053,7 +1058,12 @@ async function saveCB(){
     createdAt:new Date().toISOString()
   };
   if(!e.date||!e.amount||!e.desc){toast('Date, description and amount required.','error');return}
-  try{await db.collection('cashbook').add(e);toast('Entry posted to ACB!','success');clrCB();loadACB()}catch(err){toast(err.message,'error')}
+  try{
+    await db.collection('cashbook').add(e);
+    toast('✅ Entry posted to ACB!','success');
+    clrCB();
+    // Listener auto-updates the ledger — no manual reload needed
+  }catch(err){toast(err.message,'error')}
 }
 function clrCB(){
   ['cb-rf','cb-ds','cb-ic','cb-ch','cb-payee','cb-rm'].forEach(id=>document.getElementById(id).value='');
@@ -1361,15 +1371,34 @@ function renderGL(){
 }
 
 // ════ ANALYTICAL CASH BOOK (PRIMARY) ════
+let acbListener=null; // holds the active Firestore listener
 async function loadACB(){
   if(!allVotes.length){
     const vs=await db.collection('votes').orderBy('order').get();
     allVotes=vs.docs.map(d=>({id:d.id,...d.data()}));
   }
   updateCBVote();
-  const s=await db.collection('cashbook').orderBy('date','desc').get();
-  allCB=s.docs.map(d=>({id:d.id,...d.data()}));
-  renderACB();
+
+  // Add "All Months" option to the month filter if not already there
+  const msel=document.getElementById('cb-fm');
+  if(msel&&!msel.querySelector('option[value=""]')){
+    const allOpt=document.createElement('option');
+    allOpt.value='';allOpt.textContent='All Months';
+    msel.insertBefore(allOpt,msel.firstChild);
+  }
+
+  // Detach any existing listener before attaching a new one
+  if(acbListener)acbListener();
+
+  // Real-time listener — fires immediately and on every change
+  acbListener=db.collection('cashbook').orderBy('date','desc')
+    .onSnapshot(snap=>{
+      allCB=snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderACB();
+    },err=>{
+      console.error('ACB listener error:',err);
+      toast('Real-time sync error. Refreshing…','error');
+    });
 }
 function renderACB(){
   const mf=document.getElementById('cb-fm')?.value||'';
@@ -2016,4 +2045,4 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 </body>
-</html
+</html>

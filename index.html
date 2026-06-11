@@ -742,6 +742,36 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
 </div>
 
 <!-- Supplier Modal -->
+<div class="mo" id="vm">
+  <div class="md">
+    <div class="mdh"><h3>Record Expenditure Against Vote</h3><button class="mdc" onclick="closeModal('vm')">✕</button></div>
+    <div class="mdb">
+      <div class="fg1">
+        <div class="fr"><label>Date</label><input type="date" id="ve-dt"/></div>
+        <div class="fr"><label>LPO / LSO / Voucher No.</label><input id="ve-rf" placeholder="LPO/2025/001"/></div>
+        <div class="fr"><label>Vote Item</label><select id="ve-vt" onchange="autoFillVoteCode()"></select></div>
+        <div class="fr"><label>IFMIS Code (auto-filled)</label><input id="ve-ic" placeholder="Auto-filled from vote selection"/></div>
+        <div class="fr"><label>Description</label><input id="ve-ds" placeholder="Narration of expenditure"/></div>
+        <div class="fr"><label>Supplier / Payee</label>
+          <input id="ve-sp" list="sup-list" placeholder="Type or select supplier…" autocomplete="off"/>
+        </div>
+        <div class="fr"><label>Amount (KES)</label><input type="number" id="ve-am" step="0.01"/></div>
+        <div class="fr"><label>Payment Status</label>
+          <select id="ve-st">
+            <option value="Committed">Committed (LPO issued)</option>
+            <option value="Accrued">Accrued (goods received, invoice pending)</option>
+            <option value="Paid">Paid</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mdf">
+      <button class="btn bgh" onclick="closeModal('vm')">Cancel</button>
+      <button class="btn bnn" onclick="saveVE()">💾 Save Expenditure</button>
+    </div>
+  </div>
+</div>
+
 <div class="mo" id="supplier-modal">
   <div class="md">
     <div class="mdh"><h3 id="sup-modal-title">Add Supplier</h3><button class="mdc" onclick="closeModal('supplier-modal')">✕</button></div>

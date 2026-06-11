@@ -117,9 +117,9 @@ tfoot td{font-weight:700;color:var(--navy);border-top:2px solid var(--navy);padd
 #toast.show{transform:translateY(0)}
 #toast.success{background:var(--green)}
 #toast.error{background:var(--red)}
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;display:none;align-items:center;justify-content:center}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 16px}
 .mo.open{display:flex}
-.md{background:var(--white);border-radius:var(--rl);width:600px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.18)}
+.md{background:var(--white);border-radius:var(--rl);width:560px;max-width:100%;box-shadow:0 12px 48px rgba(0,0,0,.25);margin:auto;position:relative}
 .mdh{display:flex;align-items:center;padding:13px 17px;border-bottom:1px solid var(--g100);gap:9px}
 .mdh h3{flex:1;font-size:14px;font-weight:700;color:var(--navy)}
 .mdc{background:none;border:none;cursor:pointer;color:var(--g500);font-size:17px;padding:2px}.mdc:hover{color:var(--navy)}
@@ -741,7 +741,7 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
   </div>
 </div>
 
-<!-- Supplier Modal -->
+<!-- Record Expenditure Modal -->
 <div class="mo" id="vm">
   <div class="md">
     <div class="mdh"><h3>Record Expenditure Against Vote</h3><button class="mdc" onclick="closeModal('vm')">✕</button></div>
@@ -749,13 +749,13 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
       <div class="fg1">
         <div class="fr"><label>Date</label><input type="date" id="ve-dt"/></div>
         <div class="fr"><label>LPO / LSO / Voucher No.</label><input id="ve-rf" placeholder="LPO/2025/001"/></div>
-        <div class="fr"><label>Vote Item</label><select id="ve-vt" onchange="autoFillVoteCode()"></select></div>
-        <div class="fr"><label>IFMIS Code (auto-filled)</label><input id="ve-ic" placeholder="Auto-filled from vote selection"/></div>
+        <div class="fr"><label>Vote Item</label><select id="ve-vt" onchange="autoFillVoteCode()"><option value="">— Select Vote Item —</option></select></div>
+        <div class="fr"><label>IFMIS Code (auto-filled)</label><input id="ve-ic" placeholder="Auto-filled from vote selection" readonly style="background:var(--g50)"/></div>
         <div class="fr"><label>Description</label><input id="ve-ds" placeholder="Narration of expenditure"/></div>
         <div class="fr"><label>Supplier / Payee</label>
           <input id="ve-sp" list="sup-list" placeholder="Type or select supplier…" autocomplete="off"/>
         </div>
-        <div class="fr"><label>Amount (KES)</label><input type="number" id="ve-am" step="0.01"/></div>
+        <div class="fr"><label>Amount (KES)</label><input type="number" id="ve-am" step="0.01" placeholder="0.00"/></div>
         <div class="fr"><label>Payment Status</label>
           <select id="ve-st">
             <option value="Committed">Committed (LPO issued)</option>
@@ -1144,19 +1144,52 @@ function populateCBVoteOptions(){
 
 // ════ VOTE BOOK ════
 async function openVEModal(){
-  // Always ensure votes are loaded before opening modal
   if(!allVotes.length){
     const s=await db.collection('votes').orderBy('order').get();
     allVotes=s.docs.map(d=>({id:d.id,...d.data()}));
   }
-  populateVoteSelects();
+  // Directly populate ve-vt dropdown
+  const vsel=document.getElementById('ve-vt');
+  if(vsel)vsel.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
   document.getElementById('ve-dt').value=today();
+  document.getElementById('ve-rf').value='';
+  document.getElementById('ve-ic').value='';
+  document.getElementById('ve-ds').value='';
+  document.getElementById('ve-sp').value='';
+  document.getElementById('ve-am').value='';
+  // Auto-fill IFMIS for first vote
+  autoFillVoteCode();
   openModal('vm');
 }
 async function saveVE(){
-  const e={date:document.getElementById('ve-dt').value,ref:document.getElementById('ve-rf').value.trim(),vote:document.getElementById('ve-vt').value,ifmis:document.getElementById('ve-ic').value.trim(),desc:document.getElementById('ve-ds').value.trim(),supplier:document.getElementById('ve-sp').value.trim(),amount:parseFloat(document.getElementById('ve-am').value)||0,status:document.getElementById('ve-st').value,createdBy:userProfile.name,createdAt:new Date().toISOString()};
-  if(!e.date||!e.amount){toast('Date and amount required.','error');return}
-  try{await db.collection('vote_entries').add(e);toast('Expenditure saved!','success');closeModal('vm');loadVB()}catch(err){toast(err.message,'error')}
+  const e={
+    date:document.getElementById('ve-dt').value,
+    ref:document.getElementById('ve-rf').value.trim(),
+    vote:document.getElementById('ve-vt').value,
+    ifmis:document.getElementById('ve-ic').value.trim(),
+    desc:document.getElementById('ve-ds').value.trim(),
+    supplier:document.getElementById('ve-sp').value.trim(),
+    amount:parseFloat(document.getElementById('ve-am').value)||0,
+    status:document.getElementById('ve-st').value,
+    createdBy:userProfile.name,
+    createdAt:new Date().toISOString()
+  };
+  if(!e.date){toast('Date is required.','error');return}
+  if(!e.vote||e.vote===''){toast('Please select a vote item.','error');return}
+  if(!e.amount){toast('Amount is required.','error');return}
+  try{
+    await db.collection('vote_entries').add(e);
+    toast('✅ Expenditure saved!','success');
+    // Clear form
+    document.getElementById('ve-rf').value='';
+    document.getElementById('ve-ds').value='';
+    document.getElementById('ve-sp').value='';
+    document.getElementById('ve-am').value='';
+    document.getElementById('ve-ic').value='';
+    document.getElementById('ve-dt').value=today();
+    closeModal('vm');
+    loadVB();
+  }catch(err){toast(err.message,'error')}
 }
 async function loadVB(){
   try{

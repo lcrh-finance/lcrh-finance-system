@@ -7,6 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -318,6 +319,7 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
         <div class="sc">
           <div class="sch"><h3>AIE Budget vs Actual Summary</h3>
             <button class="btn bnn bsm" onclick="openVEModal()">+ Record Expenditure</button>
+            <button class="btn bgh bsm" onclick="openModal('import-modal')">📂 Import from Excel</button>
           </div>
           <div class="scb" style="padding:0"><div class="tw"><table>
             <thead><tr><th>Code</th><th>Vote Item</th><th>Category</th><th class="num">AIE Budget</th><th class="num">Committed</th><th class="num">Accrued</th><th class="num">Paid</th><th class="num">Total Spent</th><th class="num">Balance</th><th class="num">% Used</th><th>Status</th></tr></thead>
@@ -737,6 +739,89 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
         </div></div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- Excel Import Modal -->
+<div class="mo" id="import-modal">
+  <div class="md" style="width:680px">
+    <div class="mdh"><h3>📂 Import Transactions from Excel</h3><button class="mdc" onclick="closeModal('import-modal')">✕</button></div>
+    <div class="mdb">
+      <!-- Step 1: Upload -->
+      <div id="imp-step1">
+        <div style="background:var(--blt);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:13px;color:var(--blue)">
+          <strong>Supported formats:</strong> Your Excel file should have columns for Date, Supplier, Description, and Amount (Gross or Net). The system will auto-detect your column layout.
+        </div>
+        <div style="border:2px dashed var(--g300);border-radius:var(--r);padding:32px;text-align:center;cursor:pointer;transition:border-color .2s" id="imp-dropzone" onclick="document.getElementById('imp-file').click()" ondragover="event.preventDefault();this.style.borderColor='var(--navy)'" ondragleave="this.style.borderColor='var(--g300)'" ondrop="handleFileDrop(event)">
+          <div style="font-size:32px;margin-bottom:8px">📊</div>
+          <div style="font-size:14px;font-weight:600;color:var(--navy)">Drop your Excel file here</div>
+          <div style="font-size:12px;color:var(--g500);margin-top:4px">or click to browse — .xlsx, .xls files supported</div>
+          <input type="file" id="imp-file" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)"/>
+        </div>
+        <div id="imp-file-name" style="font-size:12px;color:var(--g500);margin-top:8px;text-align:center"></div>
+      </div>
+
+      <!-- Step 2: Column Mapping -->
+      <div id="imp-step2" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px">Map your columns to the system fields:</div>
+        <div class="fg2" style="margin-bottom:14px">
+          <div class="fr"><label>Date Column</label><select id="imp-col-date"></select></div>
+          <div class="fr"><label>Supplier / Payee Column</label><select id="imp-col-supplier"></select></div>
+          <div class="fr"><label>Description Column</label><select id="imp-col-desc"></select></div>
+          <div class="fr"><label>Amount Column</label><select id="imp-col-amount"></select></div>
+          <div class="fr"><label>Reference / LPO Column (optional)</label><select id="imp-col-ref"></select></div>
+          <div class="fr"><label>Status Column (optional)</label><select id="imp-col-status"></select></div>
+        </div>
+        <div class="fg2">
+          <div class="fr"><label>Vote Item (applies to all rows)</label><select id="imp-vote"></select></div>
+          <div class="fr"><label>Bank / Fund Account</label>
+            <select id="imp-bank">
+              <option>KCB Main Account</option><option>FIF Account</option>
+              <option>NHIF/SHA Account</option><option>Petty Cash</option>
+            </select>
+          </div>
+          <div class="fr"><label>Post to</label>
+            <select id="imp-dest">
+              <option value="both">Both ACB and Vote Book</option>
+              <option value="acb">ACB only</option>
+              <option value="vote">Vote Book only</option>
+            </select>
+          </div>
+          <div class="fr"><label>Default Status (if no status column)</label>
+            <select id="imp-default-status">
+              <option value="Paid">Paid</option>
+              <option value="Committed">Committed</option>
+              <option value="Accrued">Accrued</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div style="margin-top:16px;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px">Preview (first 5 rows):</div>
+        <div class="tw" style="max-height:200px;overflow-y:auto;border:1px solid var(--g100);border-radius:var(--r)">
+          <table><thead id="imp-preview-head"></thead><tbody id="imp-preview-body"></tbody></table>
+        </div>
+        <div id="imp-row-count" style="font-size:12px;color:var(--g500);margin-top:8px"></div>
+      </div>
+
+      <!-- Step 3: Progress -->
+      <div id="imp-step3" style="display:none;text-align:center;padding:24px">
+        <div class="spinner" style="width:32px;height:32px;border-width:3px"></div>
+        <div style="font-size:14px;font-weight:600;color:var(--navy);margin-top:12px" id="imp-progress-text">Importing…</div>
+        <div style="font-size:12px;color:var(--g500);margin-top:4px" id="imp-progress-sub"></div>
+      </div>
+
+      <!-- Step 4: Done -->
+      <div id="imp-step4" style="display:none;text-align:center;padding:24px">
+        <div style="font-size:40px">✅</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green);margin-top:8px" id="imp-done-text">Import complete!</div>
+        <div style="font-size:13px;color:var(--g500);margin-top:4px" id="imp-done-sub"></div>
+      </div>
+    </div>
+    <div class="mdf" id="imp-footer">
+      <button class="btn bgh" onclick="closeImportModal()">Cancel</button>
+      <button class="btn bnn" id="imp-btn" onclick="runImport()" style="display:none">📥 Import All Rows</button>
     </div>
   </div>
 </div>
@@ -2097,6 +2182,194 @@ function renderSupplierReport(){
     </tr>`;
   }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">✅</div><p>No outstanding commitments</p></div></td></tr>';
   document.getElementById('oc-tot').textContent=fmt(outstanding_entries.reduce((s,e)=>s+e.amount,0));
+}
+
+// ════ EXCEL IMPORT ════
+let importData=[], importHeaders=[];
+
+function handleFileDrop(event){
+  event.preventDefault();
+  document.getElementById('imp-dropzone').style.borderColor='var(--g300)';
+  const file=event.dataTransfer.files[0];
+  if(file)processImportFile(file);
+}
+function handleFileSelect(event){
+  const file=event.target.files[0];
+  if(file)processImportFile(file);
+}
+function processImportFile(file){
+  document.getElementById('imp-file-name').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      // Find header row — look for row with Date/Payment/Supplier etc.
+      let headerRow=0;
+      for(let i=0;i<Math.min(10,raw.length);i++){
+        const r=raw[i].map(c=>String(c).toLowerCase());
+        if(r.some(c=>c.includes('date')||c.includes('supplier')||c.includes('payee'))){headerRow=i;break}
+      }
+      importHeaders=raw[headerRow].map(h=>String(h).trim());
+      importData=raw.slice(headerRow+1).filter(r=>r.some(c=>c!==''&&c!==null&&c!==undefined));
+      // Auto-map columns
+      const hLower=importHeaders.map(h=>h.toLowerCase());
+      const findCol=(...terms)=>{
+        for(const t of terms){const i=hLower.findIndex(h=>h.includes(t));if(i>=0)return i;}return -1;
+      };
+      const dateIdx=findCol('payment date','date');
+      const supIdx=findCol('supplier','payee');
+      const descIdx=findCol('description','narration','desc');
+      const amtIdx=findCol('gross invoice','gross','amount','net to supplier');
+      const refIdx=findCol('lpo','lso','reference','ref','source');
+      const statusIdx=findCol('supplier status','status');
+      // Populate column selects
+      const opts=['(skip)',...importHeaders].map((h,i)=>`<option value="${i-1}">${h}</option>`).join('');
+      ['imp-col-date','imp-col-supplier','imp-col-desc','imp-col-amount','imp-col-ref','imp-col-status'].forEach(id=>document.getElementById(id).innerHTML=opts);
+      document.getElementById('imp-col-date').value=dateIdx;
+      document.getElementById('imp-col-supplier').value=supIdx;
+      document.getElementById('imp-col-desc').value=descIdx;
+      document.getElementById('imp-col-amount').value=amtIdx;
+      document.getElementById('imp-col-ref').value=refIdx;
+      document.getElementById('imp-col-status').value=statusIdx;
+      // Populate vote select
+      const vsel=document.getElementById('imp-vote');
+      vsel.innerHTML=allVotes.map(v=>`<option value="${v.name}" data-code="${v.code}">${v.code} – ${v.name}</option>`).join('');
+      // Pre-select fuel vote if importing fuel
+      const fuelVote=allVotes.find(v=>v.name.toLowerCase().includes('fuel'));
+      if(fuelVote)vsel.value=fuelVote.name;
+      // Show preview
+      showImportPreview();
+      document.getElementById('imp-step1').style.display='none';
+      document.getElementById('imp-step2').style.display='';
+      document.getElementById('imp-btn').style.display='';
+      document.getElementById('imp-row-count').textContent=`${importData.length} rows found in file`;
+    }catch(err){toast('Could not read file: '+err.message,'error')}
+  };
+  reader.readAsBinaryString(file);
+}
+function showImportPreview(){
+  const cols=['imp-col-date','imp-col-supplier','imp-col-desc','imp-col-amount','imp-col-ref'];
+  const idxs=cols.map(id=>parseInt(document.getElementById(id).value));
+  const labels=['Date','Supplier','Description','Amount','Reference'];
+  document.getElementById('imp-preview-head').innerHTML='<tr>'+labels.map(l=>`<th>${l}</th>`).join('')+'</tr>';
+  const preview=importData.slice(0,5);
+  document.getElementById('imp-preview-body').innerHTML=preview.map(row=>`<tr>${idxs.map(i=>`<td style="font-size:12px;padding:5px 8px">${i>=0&&row[i]!==undefined?String(row[i]).substring(0,40):'—'}</td>`).join('')}</tr>`).join('');
+}
+function excelDateToISO(val){
+  if(!val)return today();
+  if(val instanceof Date)return val.toISOString().split('T')[0];
+  if(typeof val==='number'){
+    // Excel serial date
+    const d=new Date((val-25569)*86400*1000);
+    return d.toISOString().split('T')[0];
+  }
+  // Try parsing string
+  const d=new Date(val);
+  if(!isNaN(d))return d.toISOString().split('T')[0];
+  return today();
+}
+function mapStatus(val){
+  if(!val)return null;
+  const v=String(val).toLowerCase();
+  if(v.includes('paid'))return'Paid';
+  if(v.includes('commit'))return'Committed';
+  if(v.includes('accru'))return'Accrued';
+  if(v.includes('payable')||v.includes('py'))return'Accrued';
+  return null;
+}
+async function runImport(){
+  const dateIdx=parseInt(document.getElementById('imp-col-date').value);
+  const supIdx=parseInt(document.getElementById('imp-col-supplier').value);
+  const descIdx=parseInt(document.getElementById('imp-col-desc').value);
+  const amtIdx=parseInt(document.getElementById('imp-col-amount').value);
+  const refIdx=parseInt(document.getElementById('imp-col-ref').value);
+  const statusIdx=parseInt(document.getElementById('imp-col-status').value);
+  const voteName=document.getElementById('imp-vote').value;
+  const vote=allVotes.find(v=>v.name===voteName);
+  const bank=document.getElementById('imp-bank').value;
+  const dest=document.getElementById('imp-dest').value;
+  const defStatus=document.getElementById('imp-default-status').value;
+  if(!voteName){toast('Please select a vote item.','error');return}
+  // Show progress
+  document.getElementById('imp-step2').style.display='none';
+  document.getElementById('imp-step3').style.display='';
+  document.getElementById('imp-btn').style.display='none';
+  document.getElementById('imp-footer').querySelector('.bgh').style.display='none';
+  let successCount=0,errorCount=0;
+  // Process in batches of 10
+  const batchSize=10;
+  for(let i=0;i<importData.length;i+=batchSize){
+    const chunk=importData.slice(i,i+batchSize);
+    document.getElementById('imp-progress-text').textContent=`Importing row ${i+1} of ${importData.length}…`;
+    document.getElementById('imp-progress-sub').textContent=`${successCount} saved so far`;
+    const batch=db.batch();
+    for(const row of chunk){
+      // Skip empty/total rows
+      const amtRaw=amtIdx>=0?row[amtIdx]:'';
+      const amt=parseFloat(String(amtRaw).replace(/[,\s]/g,''))||0;
+      if(!amt||amt===0)continue;
+      const dateVal=dateIdx>=0?row[dateIdx]:'';
+      const dateStr=excelDateToISO(dateVal);
+      const supplier=supIdx>=0?String(row[supIdx]||'').trim():'';
+      const desc=descIdx>=0?String(row[descIdx]||'').trim():'';
+      const ref=refIdx>=0?String(row[refIdx]||'').trim():'';
+      const rawStatus=statusIdx>=0?row[statusIdx]:'';
+      const status=mapStatus(rawStatus)||defStatus;
+      // ACB entry
+      if(dest==='both'||dest==='acb'){
+        const cbRef=db.collection('cashbook').doc();
+        batch.set(cbRef,{
+          date:dateStr,ref:ref||'IMP/'+dateStr,type:'payment',
+          desc:desc||'Imported: '+voteName,
+          ifmis:vote?.code||'',vote:voteName,
+          amount:amt,bank,payee:supplier,cheque:'',remarks:'Imported from Excel',
+          createdBy:userProfile.name,createdAt:new Date().toISOString()
+        });
+      }
+      // Vote entry
+      if(dest==='both'||dest==='vote'){
+        const veRef=db.collection('vote_entries').doc();
+        batch.set(veRef,{
+          date:dateStr,ref:ref||'IMP/'+dateStr,
+          vote:voteName,ifmis:vote?.code||'',
+          desc:desc||'Imported: '+voteName,
+          supplier,amount:amt,status,
+          createdBy:userProfile.name,createdAt:new Date().toISOString()
+        });
+      }
+      successCount++;
+    }
+    try{await batch.commit()}catch(e){errorCount++;console.error(e)}
+    // Small delay to avoid overwhelming Firestore
+    await new Promise(r=>setTimeout(r,300));
+  }
+  // Done
+  document.getElementById('imp-step3').style.display='none';
+  document.getElementById('imp-step4').style.display='';
+  document.getElementById('imp-done-text').textContent=`✅ ${successCount} transactions imported successfully!`;
+  document.getElementById('imp-done-sub').textContent=`Posted to: ${dest==='both'?'ACB + Vote Book':dest==='acb'?'ACB only':'Vote Book only'}${errorCount>0?' · '+errorCount+' errors':''}`; 
+  document.getElementById('imp-footer').querySelector('.bgh').textContent='Close';
+  document.getElementById('imp-footer').querySelector('.bgh').style.display='';
+  // Refresh data
+  if(dest==='both'||dest==='vote')loadVB();
+  if(dest==='both'||dest==='acb'){allCB=[];} // listener will auto-refresh ACB
+}
+function closeImportModal(){
+  closeModal('import-modal');
+  // Reset modal to step 1
+  setTimeout(()=>{
+    document.getElementById('imp-step1').style.display='';
+    document.getElementById('imp-step2').style.display='none';
+    document.getElementById('imp-step3').style.display='none';
+    document.getElementById('imp-step4').style.display='none';
+    document.getElementById('imp-btn').style.display='none';
+    document.getElementById('imp-footer').querySelector('.bgh').textContent='Cancel';
+    document.getElementById('imp-footer').querySelector('.bgh').style.display='';
+    document.getElementById('imp-file-name').textContent='';
+    document.getElementById('imp-file').value='';
+  },300);
 }
 
 // ════ INIT ════

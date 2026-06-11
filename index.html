@@ -248,6 +248,11 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
       <div class="ni" onclick="nav('monthly')"><span>📅</span> Monthly Comparative</div>
     </div>
     <div class="ns">
+      <div class="nl">Suppliers</div>
+      <div class="ni" onclick="nav('suppliers')"><span>🏢</span> Supplier Register</div>
+      <div class="ni" onclick="nav('supplier-reports')"><span>📊</span> Supplier Reports</div>
+    </div>
+    <div class="ns">
       <div class="nl">System</div>
       <div class="ni" onclick="nav('votes')"><span>⚙️</span> Vote Management</div>
       <div class="ni" onclick="nav('settings')"><span>🔧</span> Settings</div>
@@ -576,6 +581,57 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
         </div>
       </div>
 
+      <!-- SUPPLIER REGISTER -->
+      <div id="page-suppliers" class="page">
+        <div class="sc">
+          <div class="sch">
+            <h3>Supplier / Payee Register</h3>
+            <input type="text" id="sup-search" class="sel-sm" placeholder="Search supplier…" oninput="renderSuppliers()" style="min-width:200px"/>
+            <button class="btn bnn bsm" onclick="openSupplierModal()">+ Add Supplier</button>
+          </div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Supplier Name</th><th>PIN / KRA No.</th><th>Bank &amp; Account</th><th>Contact Person</th><th>Phone</th><th>Email</th><th>Category</th><th class="num">Total Committed</th><th class="num">Total Paid</th><th></th></tr></thead>
+            <tbody id="sup-tb"><tr><td colspan="10" class="loading"><span class="sp"></span>Loading…</td></tr></tbody>
+          </table></div></div>
+        </div>
+      </div>
+
+      <!-- SUPPLIER REPORTS -->
+      <div id="page-supplier-reports" class="page">
+        <div class="sc" style="margin-bottom:14px"><div class="scb">
+          <div class="fg3">
+            <div class="fr"><label>Filter by Vote</label><select id="sr-vote" onchange="renderSupplierReport()" style="font-size:13px;padding:7px 9px;border:1.5px solid var(--g300);border-radius:var(--r);outline:none"><option value="">All Votes</option></select></div>
+            <div class="fr"><label>Filter by Status</label><select id="sr-status" onchange="renderSupplierReport()" style="font-size:13px;padding:7px 9px;border:1.5px solid var(--g300);border-radius:var(--r);outline:none"><option value="">All Status</option><option>Committed</option><option>Accrued</option><option>Paid</option></select></div>
+            <div class="fr"><label>Filter by Supplier</label><input id="sr-sup" type="text" placeholder="Type supplier name…" oninput="renderSupplierReport()" style="font-size:13px;padding:7px 9px;border:1.5px solid var(--g300);border-radius:var(--r);outline:none"/></div>
+          </div>
+        </div></div>
+
+        <div class="kgrid" id="sr-kpis"></div>
+
+        <!-- Duplicate Payment Alerts -->
+        <div id="sr-alerts"></div>
+
+        <!-- Supplier × Vote Summary -->
+        <div class="sc">
+          <div class="sch"><h3>Supplier Expenditure by Vote</h3><button class="btn bgh bsm" onclick="expCSV('sr')">⬇ CSV</button></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Supplier</th><th>Vote Item</th><th>IFMIS Code</th><th class="num">Committed (KES)</th><th class="num">Accrued (KES)</th><th class="num">Paid (KES)</th><th class="num">Total (KES)</th><th>LPO/LSO Refs</th><th>Last Transaction</th></tr></thead>
+            <tbody id="sr-tb"></tbody>
+            <tfoot><tr><td colspan="3" class="bold">TOTAL</td><td class="num bold" id="sr-tc">0.00</td><td class="num bold" id="sr-ta">0.00</td><td class="num bold" id="sr-tp">0.00</td><td class="num bold" id="sr-tt">0.00</td><td colspan="2"></td></tr></tfoot>
+          </table></div></div>
+        </div>
+
+        <!-- Outstanding Commitments -->
+        <div class="sc">
+          <div class="sch"><h3>Outstanding Commitments &amp; Accruals (Unpaid)</h3><button class="btn bgh bsm" onclick="expCSV('oc')">⬇ CSV</button></div>
+          <div class="scb" style="padding:0"><div class="tw"><table>
+            <thead><tr><th>Date</th><th>LPO / Reference</th><th>Supplier</th><th>Vote Item</th><th>IFMIS</th><th>Description</th><th>Status</th><th class="num">Amount (KES)</th><th>Days Outstanding</th></tr></thead>
+            <tbody id="oc-tb"></tbody>
+            <tfoot><tr><td colspan="7" class="bold">TOTAL OUTSTANDING</td><td class="num bold" id="oc-tot">0.00</td><td></td></tr></tfoot>
+          </table></div></div>
+        </div>
+      </div>
+
       <!-- SETTINGS -->
       <div id="page-settings" class="page">
         <div class="sc"><div class="sch"><h3>Hospital Information</h3></div><div class="scb">
@@ -607,8 +663,49 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
   </div>
 </div>
 
-<!-- Modals -->
-<div class="mo" id="vm">
+<!-- Supplier Modal -->
+<div class="mo" id="supplier-modal">
+  <div class="md">
+    <div class="mdh"><h3 id="sup-modal-title">Add Supplier</h3><button class="mdc" onclick="closeModal('supplier-modal')">✕</button></div>
+    <div class="mdb">
+      <div class="fg2">
+        <div class="fr s2"><label>Supplier / Company Name</label><input id="sup-name" placeholder="e.g. Kemsa, Bidco Kenya Ltd"/></div>
+        <div class="fr"><label>PIN / KRA Number</label><input id="sup-pin" placeholder="P0123456X"/></div>
+        <div class="fr"><label>Supplier Category</label>
+          <select id="sup-cat">
+            <option>Pharmaceutical Supplier</option>
+            <option>Medical Equipment Supplier</option>
+            <option>Food & Rations Supplier</option>
+            <option>Construction & Maintenance</option>
+            <option>IT & Technology</option>
+            <option>Office Supplies</option>
+            <option>Fuel Supplier</option>
+            <option>Security Services</option>
+            <option>Cleaning Services</option>
+            <option>Professional Services</option>
+            <option>Transport & Logistics</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Bank Name</label><input id="sup-bank" placeholder="e.g. KCB, Equity, Co-op"/></div>
+        <div class="fr"><label>Bank Account Number</label><input id="sup-acct" placeholder="Account number"/></div>
+        <div class="fr"><label>Bank Branch</label><input id="sup-branch" placeholder="e.g. Lodwar Branch"/></div>
+        <div class="fr"><label>Contact Person</label><input id="sup-contact" placeholder="Name of contact"/></div>
+        <div class="fr"><label>Phone Number</label><input id="sup-phone" placeholder="+254…"/></div>
+        <div class="fr s2"><label>Email Address</label><input id="sup-email" placeholder="supplier@company.co.ke"/></div>
+        <div class="fr s2"><label>Physical Address / Location</label><input id="sup-addr" placeholder="Town, County"/></div>
+        <div class="fr s2"><label>Notes</label><input id="sup-notes" placeholder="Any additional notes about this supplier"/></div>
+      </div>
+    </div>
+    <div class="mdf">
+      <button class="btn bdr bsm" id="sup-del-btn" style="margin-right:auto;display:none" onclick="deleteSupplier()">🗑 Delete</button>
+      <button class="btn bgh" onclick="closeModal('supplier-modal')">Cancel</button>
+      <button class="btn bnn" onclick="saveSupplier()">💾 Save Supplier</button>
+    </div>
+  </div>
+</div>
+
+
   <div class="md">
     <div class="mdh"><h3>Record Expenditure Against Vote</h3><button class="mdc" onclick="closeModal('vm')">✕</button></div>
     <div class="mdb">
@@ -618,7 +715,10 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
         <div class="fr"><label>Vote Item</label><select id="ve-vt" onchange="autoFillVoteCode()"></select></div>
         <div class="fr"><label>IFMIS Code (auto-filled)</label><input id="ve-ic" placeholder="Auto-filled from vote selection"/></div>
         <div class="fr"><label>Description</label><input id="ve-ds" placeholder="Narration of expenditure"/></div>
-        <div class="fr"><label>Supplier / Payee</label><input id="ve-sp"/></div>
+        <div class="fr"><label>Supplier / Payee</label>
+          <input id="ve-sp" list="sup-list" placeholder="Type or select supplier…" autocomplete="off"/>
+          <datalist id="sup-list"></datalist>
+        </div>
         <div class="fr"><label>Amount (KES)</label><input type="number" id="ve-am" step="0.01"/></div>
         <div class="fr"><label>Payment Status</label><select id="ve-st"><option value="Committed">Committed (LPO issued)</option><option value="Accrued">Accrued (goods received, invoice pending)</option><option value="Paid">Paid</option></select></div>
       </div>
@@ -729,6 +829,8 @@ const AIE_VOTES=[
 const fmt=n=>isNaN(n)?'0.00':Number(n).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtK=n=>'KES '+fmt(n);
 const today=()=>new Date().toISOString().split('T')[0];
+let allSuppliers=[];
+let editSupplierId=null;
 
 function toast(msg,type=''){
   const t=document.getElementById('toast');
@@ -809,8 +911,8 @@ async function seedVotes(){
 }
 
 // ════ NAV ════
-const ptitles={dashboard:'Dashboard',cashbook:'Cash Book',votebook:'Vote Book',accruals:'Accrual Journal',revenue:'Revenue & Insurance Claims',ledgers:'Sub-Vote Ledgers',gl:'General Ledger',acb:'Analytical Cash Book',reports:'Financial Reports',monthly:'Monthly Comparative Report',votes:'Vote Management',settings:'Settings'};
-const navkeys=['dashboard','cashbook','votebook','accruals','revenue','ledgers','gl','acb','reports','monthly','votes','settings'];
+const ptitles={dashboard:'Dashboard',cashbook:'Cash Book',votebook:'Vote Book',accruals:'Accrual Journal',revenue:'Revenue & Insurance Claims',ledgers:'Sub-Vote Ledgers',gl:'General Ledger',acb:'Analytical Cash Book',reports:'Financial Reports',monthly:'Monthly Comparative Report',suppliers:'Supplier / Payee Register','supplier-reports':'Supplier Reports & Commitments',votes:'Vote Management',settings:'Settings'};
+const navkeys=['dashboard','cashbook','votebook','accruals','revenue','ledgers','gl','acb','reports','monthly','suppliers','supplier-reports','votes','settings'];
 let curPage='dashboard';
 function nav(page){
   document.querySelectorAll('.ni').forEach((el,i)=>el.classList.toggle('active',navkeys[i]===page));
@@ -819,7 +921,7 @@ function nav(page){
   document.getElementById('ptitle').textContent=ptitles[page]||page;
   document.getElementById('print-btn').style.display=['reports','monthly','acb','ledgers','gl'].includes(page)?'':'none';
   curPage=page;
-  ({dashboard:loadDash,cashbook:loadCB,votebook:loadVB,accruals:loadAcc,revenue:()=>{loadRev();loadClm()},ledgers:loadLedgers,gl:loadGL,acb:loadACB,reports:()=>{},monthly:()=>{},votes:loadVoteManagement,settings:loadSettings})[page]?.();
+  ({dashboard:loadDash,cashbook:loadCB,votebook:loadVB,accruals:loadAcc,revenue:()=>{loadRev();loadClm()},ledgers:loadLedgers,gl:loadGL,acb:loadACB,reports:()=>{},monthly:()=>{},suppliers:loadSuppliers,'supplier-reports':loadSupplierReports,votes:loadVoteManagement,settings:loadSettings})[page]?.();
 }
 
 function initUI(){
@@ -836,12 +938,13 @@ function initUI(){
 }
 
 // ════ CASH BOOK ════
-function updateCBVote(){
+async function updateCBVote(){
   const t=document.getElementById('cb-tp').value;
   const vs=document.getElementById('cb-vt');
   if(t==='receipt'){
-    vs.innerHTML='<option>Revenue – OPD</option><option>Revenue – IPD</option><option>Revenue – NHIF/SHA</option><option>Revenue – Insurance</option><option>Revenue – FIF</option><option>Revenue – DANIDA</option><option>Revenue – County Transfer</option><option>Revenue – Other</option>';
+    vs.innerHTML='<option value="Revenue – OPD">Revenue – OPD</option><option value="Revenue – IPD">Revenue – IPD</option><option value="Revenue – NHIF/SHA">Revenue – NHIF/SHA</option><option value="Revenue – Insurance">Revenue – Insurance</option><option value="Revenue – FIF">Revenue – FIF</option><option value="Revenue – DANIDA">Revenue – DANIDA</option><option value="Revenue – County Transfer">Revenue – County Transfer</option><option value="Revenue – Other">Revenue – Other</option>';
   }else{
+    if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
     vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
   }
 }
@@ -853,7 +956,16 @@ async function saveCB(){
 function clrCB(){['cb-rf','cb-ds','cb-ic','cb-ch','cb-rm'].forEach(id=>document.getElementById(id).value='');document.getElementById('cb-am').value='';document.getElementById('cb-dt').value=today()}
 async function loadCB(){
   document.getElementById('cb-tb').innerHTML='<tr><td colspan="10" class="loading"><span class="sp"></span>Loading…</td></tr>';
-  try{const s=await db.collection('cashbook').orderBy('date','desc').get();allCB=s.docs.map(d=>({id:d.id,...d.data()}));renderCB();populateCBVoteOptions()}catch(e){toast(e.message,'error')}
+  try{
+    // Load votes first if not already loaded
+    if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
+    const s=await db.collection('cashbook').orderBy('date','desc').get();
+    allCB=s.docs.map(d=>({id:d.id,...d.data()}));
+    // Pre-populate vote dropdown based on current type selection
+    await updateCBVote();
+    renderCB();
+    populateCBVoteOptions();
+  }catch(e){toast(e.message,'error')}
 }
 function renderCB(){
   const mf=document.getElementById('cb-fm').value,tf=document.getElementById('cb-filter-type')?document.getElementById('cb-filter-type').value:'';
@@ -879,7 +991,7 @@ function renderCB(){
 }
 function populateCBVoteOptions(){
   const vs=document.getElementById('cb-vt');
-  if(document.getElementById('cb-tp').value==='payment')
+  if(document.getElementById('cb-tp').value==='payment'&&allVotes.length)
     vs.innerHTML=allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
 }
 
@@ -1523,9 +1635,201 @@ function expCSV(mod){
   else if(mod==='cl'){hdr=['Date','Reference','Insurer','Description','Claimed','Approved','Received','Status'];rows=allClm.map(r=>[r.date,r.ref,r.insurer,r.desc,r.claimed,r.approved,r.received,r.status])}
   else if(mod==='acb'){hdr=['Date','Reference','Description','Vote','Bank','Receipts','Payments','Balance'];let b=0;rows=allCB.filter(r=>r.date?.startsWith(document.getElementById('acb-mon').value)).map(r=>{if(r.type==='receipt')b+=r.amount;else b-=r.amount;return[r.date,r.ref,r.desc,r.vote,r.bank,r.type==='receipt'?r.amount:'',r.type==='payment'?r.amount:'',b]})}
   else if(mod==='lv'){const vid=document.getElementById('lv-sel').value;const v=allVotes.find(x=>x.id===vid);hdr=['Date','Reference','Description','Supplier','Status','Expenditure','Budget','Balance'];let b=v?v.amount:0;rows=allVE.filter(e=>v&&e.vote===v.name).map(e=>{b-=e.amount;return[e.date,e.ref,e.desc,e.supplier,e.status,e.amount,'',b]})}
+  else if(mod==='sr'){hdr=['Supplier','Vote Item','IFMIS','Committed','Accrued','Paid','Total','LPO Refs','Last Date'];const matrix={};allVE.forEach(e=>{const k=`${e.supplier||''}||${e.vote}||${e.ifmis||''}`;if(!matrix[k])matrix[k]={sup:e.supplier||'',vote:e.vote,ifmis:e.ifmis||'',c:0,a:0,p:0,refs:[],ld:''};if(e.status==='Committed')matrix[k].c+=e.amount;else if(e.status==='Accrued')matrix[k].a+=e.amount;else matrix[k].p+=e.amount;if(e.ref&&!matrix[k].refs.includes(e.ref))matrix[k].refs.push(e.ref);if(!matrix[k].ld||e.date>matrix[k].ld)matrix[k].ld=e.date});rows=Object.values(matrix).map(r=>[r.sup,r.vote,r.ifmis,r.c,r.a,r.p,r.c+r.a+r.p,r.refs.join('; '),r.ld])}
+  else if(mod==='oc'){hdr=['Date','Reference','Supplier','Vote','IFMIS','Description','Status','Amount','Days Outstanding'];const now=new Date();rows=allVE.filter(e=>e.status!=='Paid').map(e=>[e.date,e.ref,e.supplier,e.vote,e.ifmis,e.desc,e.status,e.amount,Math.floor((now-new Date(e.date))/(1000*60*60*24))])}
   const csv=[hdr,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();
   toast('CSV exported!','success');
+}
+
+// ════ SUPPLIERS ════
+async function loadSuppliers(){
+  try{
+    const[ss,ves]=await Promise.all([db.collection('suppliers').orderBy('name').get(),db.collection('vote_entries').get()]);
+    allSuppliers=ss.docs.map(d=>({id:d.id,...d.data()}));
+    allVE=ves.docs.map(d=>({id:d.id,...d.data()}));
+    renderSuppliers();
+    refreshSupplierDatalist();
+  }catch(e){console.error(e)}
+}
+function renderSuppliers(){
+  const q=(document.getElementById('sup-search')?.value||'').toLowerCase();
+  let rows=allSuppliers;
+  if(q)rows=rows.filter(s=>s.name?.toLowerCase().includes(q)||s.pin?.toLowerCase().includes(q));
+  const tbody=document.getElementById('sup-tb');
+  if(!tbody)return;
+  tbody.innerHTML=rows.length?rows.map(s=>{
+    const ents=allVE.filter(e=>e.supplier===s.name);
+    const committed=ents.filter(e=>e.status==='Committed').reduce((sum,e)=>sum+e.amount,0);
+    const paid=ents.filter(e=>e.status==='Paid').reduce((sum,e)=>sum+e.amount,0);
+    return`<tr>
+      <td class="bold">${s.name}</td>
+      <td><code class="ic">${s.pin||'—'}</code></td>
+      <td style="font-size:12px">${s.bank||'—'}${s.acct?' · '+s.acct:''}</td>
+      <td>${s.contact||'—'}</td>
+      <td>${s.phone||'—'}</td>
+      <td style="font-size:12px">${s.email||'—'}</td>
+      <td><span class="badge bgr" style="font-size:10px">${s.cat||'—'}</span></td>
+      <td class="num">${fmt(committed)}</td>
+      <td class="num" style="color:var(--green)">${fmt(paid)}</td>
+      <td><button class="btn bgh bsm" onclick="editSupplier('${s.id}')" style="padding:4px 9px;font-size:11px">Edit</button></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="10"><div class="empty"><div class="ei">🏢</div><p>No suppliers yet. Click "+ Add Supplier" to start building your register.</p></div></td></tr>';
+}
+function refreshSupplierDatalist(){
+  const dl=document.getElementById('sup-list');
+  if(dl)dl.innerHTML=allSuppliers.map(s=>`<option value="${s.name}">`).join('');
+}
+function openSupplierModal(){
+  editSupplierId=null;
+  document.getElementById('sup-modal-title').textContent='Add Supplier';
+  ['sup-name','sup-pin','sup-bank','sup-acct','sup-branch','sup-contact','sup-phone','sup-email','sup-addr','sup-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sup-del-btn').style.display='none';
+  openModal('supplier-modal');
+}
+function editSupplier(id){
+  editSupplierId=id;
+  const s=allSuppliers.find(x=>x.id===id);if(!s)return;
+  document.getElementById('sup-modal-title').textContent='Edit Supplier';
+  document.getElementById('sup-name').value=s.name||'';
+  document.getElementById('sup-pin').value=s.pin||'';
+  document.getElementById('sup-cat').value=s.cat||'Other';
+  document.getElementById('sup-bank').value=s.bank||'';
+  document.getElementById('sup-acct').value=s.acct||'';
+  document.getElementById('sup-branch').value=s.branch||'';
+  document.getElementById('sup-contact').value=s.contact||'';
+  document.getElementById('sup-phone').value=s.phone||'';
+  document.getElementById('sup-email').value=s.email||'';
+  document.getElementById('sup-addr').value=s.addr||'';
+  document.getElementById('sup-notes').value=s.notes||'';
+  document.getElementById('sup-del-btn').style.display='';
+  openModal('supplier-modal');
+}
+async function saveSupplier(){
+  const data={
+    name:document.getElementById('sup-name').value.trim(),
+    pin:document.getElementById('sup-pin').value.trim(),
+    cat:document.getElementById('sup-cat').value,
+    bank:document.getElementById('sup-bank').value.trim(),
+    acct:document.getElementById('sup-acct').value.trim(),
+    branch:document.getElementById('sup-branch').value.trim(),
+    contact:document.getElementById('sup-contact').value.trim(),
+    phone:document.getElementById('sup-phone').value.trim(),
+    email:document.getElementById('sup-email').value.trim(),
+    addr:document.getElementById('sup-addr').value.trim(),
+    notes:document.getElementById('sup-notes').value.trim(),
+    updatedAt:new Date().toISOString()
+  };
+  if(!data.name){toast('Supplier name required.','error');return}
+  try{
+    if(editSupplierId)await db.collection('suppliers').doc(editSupplierId).update(data);
+    else await db.collection('suppliers').add({...data,createdAt:new Date().toISOString()});
+    toast(editSupplierId?'Supplier updated!':'Supplier added!','success');
+    closeModal('supplier-modal');loadSuppliers();
+  }catch(e){toast(e.message,'error')}
+}
+async function deleteSupplier(){
+  if(!editSupplierId)return;
+  if(!confirm('Delete this supplier from the register? Existing expenditure entries linked to them will not be affected.'))return;
+  try{await db.collection('suppliers').doc(editSupplierId).delete();toast('Supplier deleted.','success');closeModal('supplier-modal');loadSuppliers()}
+  catch(e){toast(e.message,'error')}
+}
+
+// ════ SUPPLIER REPORTS ════
+async function loadSupplierReports(){
+  if(!allVotes.length){const s=await db.collection('votes').orderBy('order').get();allVotes=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allVE.length){const s=await db.collection('vote_entries').orderBy('date','desc').get();allVE=s.docs.map(d=>({id:d.id,...d.data()}));}
+  if(!allSuppliers.length){const s=await db.collection('suppliers').get();allSuppliers=s.docs.map(d=>({id:d.id,...d.data()}));}
+  // Populate vote filter
+  const vsel=document.getElementById('sr-vote');
+  if(vsel)vsel.innerHTML='<option value="">All Votes</option>'+allVotes.map(v=>`<option value="${v.name}">${v.code} – ${v.name}</option>`).join('');
+  renderSupplierReport();
+}
+function renderSupplierReport(){
+  const vf=document.getElementById('sr-vote')?.value||'';
+  const sf=document.getElementById('sr-status')?.value||'';
+  const supf=(document.getElementById('sr-sup')?.value||'').toLowerCase();
+  let entries=allVE;
+  if(vf)entries=entries.filter(e=>e.vote===vf);
+  if(sf)entries=entries.filter(e=>e.status===sf);
+  if(supf)entries=entries.filter(e=>e.supplier?.toLowerCase().includes(supf));
+
+  // KPIs
+  const totComm=entries.filter(e=>e.status==='Committed').reduce((s,e)=>s+e.amount,0);
+  const totAcc=entries.filter(e=>e.status==='Accrued').reduce((s,e)=>s+e.amount,0);
+  const totPaid=entries.filter(e=>e.status==='Paid').reduce((s,e)=>s+e.amount,0);
+  const outstanding=entries.filter(e=>e.status!=='Paid').reduce((s,e)=>s+e.amount,0);
+  const uniqueSuppliers=new Set(entries.map(e=>e.supplier).filter(Boolean)).size;
+  document.getElementById('sr-kpis').innerHTML=`
+    <div class="kcard"><div class="klbl">Unique Suppliers</div><div class="kval bl">${uniqueSuppliers}</div><div class="ksub">in filtered results</div></div>
+    <div class="kcard"><div class="klbl">Total Committed</div><div class="kval gd">${fmtK(totComm)}</div><div class="ksub">LPOs issued</div></div>
+    <div class="kcard"><div class="klbl">Total Accrued</div><div class="kval bl">${fmtK(totAcc)}</div><div class="ksub">Goods received, unpaid</div></div>
+    <div class="kcard"><div class="klbl">Total Paid</div><div class="kval gn">${fmtK(totPaid)}</div><div class="ksub">Payments made</div></div>
+    <div class="kcard"><div class="klbl">Outstanding</div><div class="kval rd">${fmtK(outstanding)}</div><div class="ksub">Committed + Accrued unpaid</div></div>`;
+
+  // Duplicate detection — same supplier, same vote, multiple committed entries
+  const dupCheck={};entries.filter(e=>e.status==='Committed').forEach(e=>{const k=`${e.supplier}||${e.vote}`;if(!dupCheck[k])dupCheck[k]=[];dupCheck[k].push(e)});
+  const dups=Object.entries(dupCheck).filter(([,v])=>v.length>1);
+  document.getElementById('sr-alerts').innerHTML=dups.length?`
+    <div style="background:var(--rlt);border:1.5px solid var(--red);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px">⚠️ Possible Duplicate Payment Alerts (${dups.length})</div>
+      ${dups.map(([key,ents])=>{const[sup,vote]=key.split('||');return`<div style="font-size:12px;color:var(--red);margin-bottom:4px;padding:6px 10px;background:var(--white);border-radius:var(--r)">
+        <strong>${sup}</strong> has <strong>${ents.length} committed entries</strong> under <em>${vote}</em> — Refs: ${ents.map(e=>e.ref||'—').join(', ')} — Total: KES ${fmt(ents.reduce((s,e)=>s+e.amount,0))}
+      </div>`}).join('')}
+    </div>`:'';
+
+  // Supplier × Vote matrix
+  const matrix={};
+  entries.forEach(e=>{
+    const sup=e.supplier||'(No Supplier)';
+    const key=`${sup}||${e.vote}||${e.ifmis||'—'}`;
+    if(!matrix[key])matrix[key]={sup,vote:e.vote,ifmis:e.ifmis||'—',committed:0,accrued:0,paid:0,refs:[],lastDate:''};
+    if(e.status==='Committed')matrix[key].committed+=e.amount;
+    else if(e.status==='Accrued')matrix[key].accrued+=e.amount;
+    else if(e.status==='Paid')matrix[key].paid+=e.amount;
+    if(e.ref&&!matrix[key].refs.includes(e.ref))matrix[key].refs.push(e.ref);
+    if(!matrix[key].lastDate||e.date>matrix[key].lastDate)matrix[key].lastDate=e.date;
+  });
+  const mrows=Object.values(matrix).sort((a,b)=>(b.committed+b.accrued+b.paid)-(a.committed+a.accrued+a.paid));
+  let tC=0,tA=0,tP=0;
+  document.getElementById('sr-tb').innerHTML=mrows.length?mrows.map(r=>{
+    const total=r.committed+r.accrued+r.paid;tC+=r.committed;tA+=r.accrued;tP+=r.paid;
+    return`<tr>
+      <td class="bold">${r.sup}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vote}">${r.vote}</td>
+      <td><code class="ic">${r.ifmis}</code></td>
+      <td class="num">${r.committed>0?fmt(r.committed):'—'}</td>
+      <td class="num">${r.accrued>0?fmt(r.accrued):'—'}</td>
+      <td class="num" style="color:var(--green)">${r.paid>0?fmt(r.paid):'—'}</td>
+      <td class="num bold">${fmt(total)}</td>
+      <td style="font-size:11px;color:var(--g500)">${r.refs.slice(0,3).join(', ')}${r.refs.length>3?'…':''}</td>
+      <td style="font-size:12px">${r.lastDate||'—'}</td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><p>No entries match filters</p></div></td></tr>';
+  document.getElementById('sr-tc').textContent=fmt(tC);
+  document.getElementById('sr-ta').textContent=fmt(tA);
+  document.getElementById('sr-tp').textContent=fmt(tP);
+  document.getElementById('sr-tt').textContent=fmt(tC+tA+tP);
+
+  // Outstanding commitments
+  const outstanding_entries=entries.filter(e=>e.status!=='Paid').sort((a,b)=>a.date.localeCompare(b.date));
+  const now=new Date();
+  document.getElementById('oc-tb').innerHTML=outstanding_entries.length?outstanding_entries.map(e=>{
+    const days=Math.floor((now-new Date(e.date))/(1000*60*60*24));
+    const daysBadge=days>90?`<span class="badge br">${days}d</span>`:days>30?`<span class="badge ba">${days}d</span>`:`<span class="badge bg">${days}d</span>`;
+    const sc=e.status==='Committed'?'ba':'bb';
+    return`<tr>
+      <td>${e.date}</td><td>${e.ref||'—'}</td>
+      <td class="bold">${e.supplier||'—'}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.vote}">${e.vote}</td>
+      <td><code class="ic">${e.ifmis||'—'}</code></td>
+      <td>${e.desc||'—'}</td>
+      <td><span class="badge ${sc}">${e.status}</span></td>
+      <td class="num bold">${fmt(e.amount)}</td>
+      <td style="text-align:center">${daysBadge}</td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">✅</div><p>No outstanding commitments</p></div></td></tr>';
+  document.getElementById('oc-tot').textContent=fmt(outstanding_entries.reduce((s,e)=>s+e.amount,0));
 }
 
 // ════ INIT ════

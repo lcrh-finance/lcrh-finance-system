@@ -407,7 +407,9 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
             </div>
             <div class="fax"><button class="btn bgh" onclick="clrRev()">Clear</button><button class="btn bnn" onclick="saveRev()">💾 Save Revenue</button></div>
           </div></div>
-          <div class="sc"><div class="sch"><h3>Revenue Ledger</h3><button class="btn bgh bsm" onclick="expCSV('rv')">⬇ CSV</button></div>
+          <div class="sc"><div class="sch"><h3>Revenue Ledger</h3>
+            <button class="btn bnn bsm" onclick="openModal('rev-import-modal')">📂 Import from Excel</button>
+            <button class="btn bgh bsm" onclick="expCSV('rv')">⬇ CSV</button></div>
             <div class="scb" style="padding:0"><div class="tw"><table>
               <thead><tr><th>Date</th><th>Receipt No.</th><th>Stream</th><th>Description</th><th>Payer</th><th>Collected To</th><th class="num">Amount (KES)</th><th></th></tr></thead>
               <tbody id="rv-tb"></tbody>
@@ -480,7 +482,10 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
 
         <!-- Entry Form -->
         <div class="sc">
-          <div class="sch"><h3>New ACB Entry</h3></div>
+          <div class="sch">
+            <h3>New ACB Entry</h3>
+            <button class="btn bgh bsm" onclick="openModal('receipt-import-modal')">📂 Import Receipts from Excel</button>
+          </div>
           <div class="scb">
             <div class="fg3">
               <div class="fr"><label>Date</label><input type="date" id="cb-dt"/></div>
@@ -743,7 +748,103 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
   </div>
 </div>
 
-<!-- Excel Import Modal -->
+<!-- Revenue Excel Import Modal -->
+<div class="mo" id="rev-import-modal">
+  <div class="md" style="width:700px">
+    <div class="mdh"><h3>📂 Import Revenue Receipts from Excel</h3><button class="mdc" onclick="closeRevImportModal()">✕</button></div>
+    <div class="mdb">
+
+      <!-- Step 1: Upload -->
+      <div id="rev-imp-step1">
+        <div style="background:var(--glt);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--green)">
+          <strong>Use the LCRH Revenue Template</strong> — 7 columns: Date, Receipt No., Source/Payer, Revenue Stream, Details/Description, Amount (KES), Bank/Fund.<br/>
+          <span style="font-size:12px">Revenue Stream must be one of: OPD, IPD, Lab, Pharmacy, Radiology, Maternity, Theatre, NHIF/SHA, Insurance, FIF, DANIDA, County Transfer, Other</span>
+        </div>
+        <div style="border:2px dashed var(--g300);border-radius:var(--r);padding:32px;text-align:center;cursor:pointer" 
+             id="rev-imp-dropzone" 
+             onclick="document.getElementById('rev-imp-file').click()"
+             ondragover="event.preventDefault();this.style.borderColor='var(--navy)'"
+             ondragleave="this.style.borderColor='var(--g300)'"
+             ondrop="handleRevFileDrop(event)">
+          <div style="font-size:36px;margin-bottom:8px">📊</div>
+          <div style="font-size:14px;font-weight:600;color:var(--navy)">Drop your Excel file here</div>
+          <div style="font-size:12px;color:var(--g500);margin-top:4px">or click to browse — .xlsx files</div>
+          <input type="file" id="rev-imp-file" accept=".xlsx,.xls" style="display:none" onchange="handleRevFileSelect(event)"/>
+        </div>
+        <div id="rev-imp-filename" style="font-size:12px;color:var(--g500);margin-top:8px;text-align:center"></div>
+      </div>
+
+      <!-- Step 2: Preview & Map -->
+      <div id="rev-imp-step2" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">Column mapping — auto-detected from your file:</div>
+        <div class="fg3" style="margin-bottom:14px">
+          <div class="fr"><label>Date Column</label><select id="rv-col-date"></select></div>
+          <div class="fr"><label>Receipt No. Column</label><select id="rv-col-rcpt"></select></div>
+          <div class="fr"><label>Source / Payer Column</label><select id="rv-col-payer"></select></div>
+          <div class="fr"><label>Revenue Stream Column</label><select id="rv-col-stream"></select></div>
+          <div class="fr"><label>Description Column</label><select id="rv-col-desc"></select></div>
+          <div class="fr"><label>Amount Column</label><select id="rv-col-amount"></select></div>
+          <div class="fr"><label>Bank / Fund Column</label><select id="rv-col-bank"></select></div>
+        </div>
+        <div class="fg2" style="margin-bottom:14px">
+          <div class="fr">
+            <label>Default Revenue Stream (if no stream column)</label>
+            <select id="rv-imp-default-stream">
+              <option value="FIF">FIF Allocation</option>
+              <option value="OPD">OPD – Outpatient</option>
+              <option value="IPD">IPD – Inpatient</option>
+              <option value="NHIF/SHA">NHIF/SHA</option>
+              <option value="Insurance">Insurance</option>
+              <option value="County Transfer">County Transfer</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="fr">
+            <label>Default Bank (if no bank column)</label>
+            <select id="rv-imp-default-bank">
+              <option>FIF Account</option>
+              <option>KCB Main Account</option>
+              <option>NHIF/SHA Account</option>
+              <option>Petty Cash</option>
+            </select>
+          </div>
+          <div class="fr">
+            <label>Also post to ACB as Receipt</label>
+            <select id="rv-imp-acb">
+              <option value="yes">Yes — post to ACB too</option>
+              <option value="no">No — Revenue only</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px">Preview (first 5 rows):</div>
+        <div class="tw" style="max-height:180px;overflow-y:auto;border:1px solid var(--g100);border-radius:var(--r)">
+          <table><thead id="rv-imp-prev-head"></thead><tbody id="rv-imp-prev-body"></tbody></table>
+        </div>
+        <div id="rv-imp-rowcount" style="font-size:12px;color:var(--g500);margin-top:6px"></div>
+      </div>
+
+      <!-- Step 3: Progress -->
+      <div id="rev-imp-step3" style="display:none;text-align:center;padding:28px">
+        <div class="spinner" style="width:36px;height:36px;border-width:3px;display:inline-block"></div>
+        <div style="font-size:14px;font-weight:600;color:var(--navy);margin-top:14px" id="rv-imp-prog-text">Importing…</div>
+        <div style="font-size:12px;color:var(--g500);margin-top:4px" id="rv-imp-prog-sub"></div>
+      </div>
+
+      <!-- Step 4: Done -->
+      <div id="rev-imp-step4" style="display:none;text-align:center;padding:28px">
+        <div style="font-size:44px">✅</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green);margin-top:10px" id="rv-imp-done-text">Import complete!</div>
+        <div style="font-size:13px;color:var(--g500);margin-top:4px" id="rv-imp-done-sub"></div>
+      </div>
+    </div>
+    <div class="mdf" id="rv-imp-footer">
+      <button class="btn bgh" onclick="closeRevImportModal()">Cancel</button>
+      <button class="btn bnn" id="rv-imp-btn" onclick="runRevImport()" style="display:none">📥 Import All Rows</button>
+    </div>
+  </div>
+</div>
+
+<!-- Excel Import Modal (Vote Book) -->
 <div class="mo" id="import-modal">
   <div class="md" style="width:680px">
     <div class="mdh"><h3>📂 Import Transactions from Excel</h3><button class="mdc" onclick="closeModal('import-modal')">✕</button></div>
@@ -2184,7 +2285,189 @@ function renderSupplierReport(){
   document.getElementById('oc-tot').textContent=fmt(outstanding_entries.reduce((s,e)=>s+e.amount,0));
 }
 
-// ════ EXCEL IMPORT ════
+// ════ REVENUE EXCEL IMPORT ════
+let revImportData=[], revImportHeaders=[];
+
+function handleRevFileDrop(e){
+  e.preventDefault();
+  document.getElementById('rev-imp-dropzone').style.borderColor='var(--g300)';
+  const f=e.dataTransfer.files[0];if(f)processRevFile(f);
+}
+function handleRevFileSelect(e){const f=e.target.files[0];if(f)processRevFile(f);}
+
+function processRevFile(file){
+  document.getElementById('rev-imp-filename').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      // Find header row
+      let hRow=0;
+      for(let i=0;i<Math.min(8,raw.length);i++){
+        const r=raw[i].map(c=>String(c).toLowerCase());
+        if(r.some(c=>c.includes('date')||c.includes('source')||c.includes('amount'))){hRow=i;break;}
+      }
+      revImportHeaders=raw[hRow].map(h=>String(h).trim());
+      revImportData=raw.slice(hRow+1).filter(r=>r.some(c=>c!==''&&c!==null&&c!==undefined));
+      // Auto-detect columns
+      const hl=revImportHeaders.map(h=>h.toLowerCase());
+      const fc=(...terms)=>{for(const t of terms){const i=hl.findIndex(h=>h.includes(t));if(i>=0)return i;}return -1;};
+      const dateIdx=fc('payment date','date');
+      const rcptIdx=fc('receipt','ref','no.');
+      const payerIdx=fc('source','payer','payee','supplier');
+      const streamIdx=fc('revenue stream','stream','type');
+      const descIdx=fc('detail','description','narration','desc');
+      const amtIdx=fc('amount','gross','net');
+      const bankIdx=fc('bank','fund','collected');
+      // Populate selects
+      const noOpt='<option value="-1">(skip / auto)</option>';
+      const opts=noOpt+revImportHeaders.map((h,i)=>`<option value="${i}">${h}</option>`).join('');
+      ['rv-col-date','rv-col-rcpt','rv-col-payer','rv-col-stream','rv-col-desc','rv-col-amount','rv-col-bank'].forEach(id=>document.getElementById(id).innerHTML=opts);
+      document.getElementById('rv-col-date').value=dateIdx;
+      document.getElementById('rv-col-rcpt').value=rcptIdx;
+      document.getElementById('rv-col-payer').value=payerIdx;
+      document.getElementById('rv-col-stream').value=streamIdx;
+      document.getElementById('rv-col-desc').value=descIdx;
+      document.getElementById('rv-col-amount').value=amtIdx;
+      document.getElementById('rv-col-bank').value=bankIdx;
+      // Preview
+      showRevPreview();
+      document.getElementById('rev-imp-step1').style.display='none';
+      document.getElementById('rev-imp-step2').style.display='';
+      document.getElementById('rv-imp-btn').style.display='';
+      document.getElementById('rv-imp-rowcount').textContent=`${revImportData.length} rows found`;
+    }catch(err){toast('Could not read file: '+err.message,'error');}
+  };
+  reader.readAsBinaryString(file);
+}
+function showRevPreview(){
+  const idxs=['rv-col-date','rv-col-payer','rv-col-stream','rv-col-amount','rv-col-bank'].map(id=>parseInt(document.getElementById(id).value));
+  const labels=['Date','Payer','Stream','Amount','Bank'];
+  document.getElementById('rv-imp-prev-head').innerHTML='<tr>'+labels.map(l=>`<th>${l}</th>`).join('')+'</tr>';
+  document.getElementById('rv-imp-prev-body').innerHTML=revImportData.slice(0,5).map(row=>`<tr>${idxs.map(i=>`<td style="font-size:12px;padding:5px 8px">${i>=0&&row[i]!==undefined?String(row[i]).substring(0,35):'—'}</td>`).join('')}</tr>`).join('');
+}
+function mapRevStream(val){
+  if(!val)return null;
+  const v=String(val).toLowerCase().trim();
+  if(v==='fif'||v.includes('facility improvement'))return'FIF';
+  if(v.includes('opd')||v.includes('outpatient'))return'OPD';
+  if(v.includes('ipd')||v.includes('inpatient'))return'IPD';
+  if(v.includes('lab'))return'Lab';
+  if(v.includes('pharm'))return'Pharmacy';
+  if(v.includes('radio')||v.includes('x-ray'))return'Radiology';
+  if(v.includes('matern'))return'Maternity';
+  if(v.includes('theatre')||v.includes('theater'))return'Theatre';
+  if(v.includes('nhif')||v.includes('sha')||v.includes('social health'))return'NHIF/SHA';
+  if(v.includes('insurance')||v.includes('irc')||v.includes('jubilee')||v.includes('aar')||v.includes('cic')||v.includes('resolution'))return'Insurance';
+  if(v.includes('danida'))return'DANIDA';
+  if(v.includes('county')||v.includes('turkana')||v.includes('transfer')||v.includes('exchequer'))return'County Transfer';
+  if(v.includes('claims'))return'Insurance';
+  return null;
+}
+function mapRevBank(val){
+  if(!val)return null;
+  const v=String(val).toLowerCase();
+  if(v.includes('fif'))return'FIF Account';
+  if(v.includes('nhif')||v.includes('sha'))return'NHIF/SHA Account';
+  if(v.includes('petty'))return'Petty Cash';
+  if(v.includes('kcb')||v.includes('main'))return'KCB Main Account';
+  return null;
+}
+async function runRevImport(){
+  const getIdx=id=>parseInt(document.getElementById(id).value);
+  const dateIdx=getIdx('rv-col-date');
+  const rcptIdx=getIdx('rv-col-rcpt');
+  const payerIdx=getIdx('rv-col-payer');
+  const streamIdx=getIdx('rv-col-stream');
+  const descIdx=getIdx('rv-col-desc');
+  const amtIdx=getIdx('rv-col-amount');
+  const bankIdx=getIdx('rv-col-bank');
+  const defStream=document.getElementById('rv-imp-default-stream').value;
+  const defBank=document.getElementById('rv-imp-default-bank').value;
+  const postToACB=document.getElementById('rv-imp-acb').value==='yes';
+  // Show progress
+  document.getElementById('rev-imp-step2').style.display='none';
+  document.getElementById('rev-imp-step3').style.display='';
+  document.getElementById('rv-imp-btn').style.display='none';
+  document.getElementById('rv-imp-footer').querySelector('.bgh').style.display='none';
+  let saved=0, skipped=0;
+  const batchSize=10;
+  for(let i=0;i<revImportData.length;i+=batchSize){
+    const chunk=revImportData.slice(i,i+batchSize);
+    document.getElementById('rv-imp-prog-text').textContent=`Importing row ${i+1} of ${revImportData.length}…`;
+    document.getElementById('rv-imp-prog-sub').textContent=`${saved} saved so far`;
+    const batch=db.batch();
+    for(const row of chunk){
+      const rawAmt=amtIdx>=0?row[amtIdx]:'';
+      const amt=parseFloat(String(rawAmt).replace(/[,\s]/g,''))||0;
+      if(!amt){skipped++;continue;}
+      const dateVal=dateIdx>=0?row[dateIdx]:'';
+      const dateStr=excelDateToISO(dateVal);
+      const payer=payerIdx>=0?String(row[payerIdx]||'').trim():'';
+      const rawStream=streamIdx>=0?String(row[streamIdx]||'').trim():'';
+      const stream=mapRevStream(rawStream)||mapRevStream(payer)||defStream;
+      const desc=descIdx>=0?String(row[descIdx]||'').trim():'';
+      const rawBank=bankIdx>=0?String(row[bankIdx]||'').trim():'';
+      const bank=mapRevBank(rawBank)||defBank;
+      const rcpt=rcptIdx>=0?String(row[rcptIdx]||'').trim():'';
+      // Revenue entry
+      const rvRef=db.collection('revenue').doc();
+      batch.set(rvRef,{
+        date:dateStr,
+        rcpt:rcpt||`IMP-RV/${dateStr}/${saved+1}`,
+        stream,desc:desc||payer||stream,
+        payer,amount:amt,bank,
+        createdBy:userProfile.name,
+        createdAt:new Date().toISOString()
+      });
+      // ACB receipt entry
+      if(postToACB){
+        const cbRef=db.collection('cashbook').doc();
+        batch.set(cbRef,{
+          date:dateStr,
+          ref:rcpt||`IMP-RV/${dateStr}/${saved+1}`,
+          type:'receipt',
+          desc:desc||payer||stream,
+          ifmis:'',
+          vote:`Revenue – ${stream}`,
+          amount:amt,bank,
+          payee:payer,cheque:'',
+          remarks:'Imported from Excel',
+          createdBy:userProfile.name,
+          createdAt:new Date().toISOString()
+        });
+      }
+      saved++;
+    }
+    try{await batch.commit();}catch(e){console.error('Batch error:',e);}
+    await new Promise(r=>setTimeout(r,300));
+  }
+  // Done
+  document.getElementById('rev-imp-step3').style.display='none';
+  document.getElementById('rev-imp-step4').style.display='';
+  document.getElementById('rv-imp-done-text').textContent=`✅ ${saved} receipts imported!`;
+  document.getElementById('rv-imp-done-sub').textContent=`Posted to Revenue${postToACB?' + ACB':''} · ${skipped} rows skipped (no amount)`;
+  document.getElementById('rv-imp-footer').querySelector('.bgh').textContent='Close';
+  document.getElementById('rv-imp-footer').querySelector('.bgh').style.display='';
+  loadRev();
+  loadClm();
+}
+function closeRevImportModal(){
+  closeModal('rev-import-modal');
+  setTimeout(()=>{
+    ['rev-imp-step2','rev-imp-step3','rev-imp-step4'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('rev-imp-step1').style.display='';
+    document.getElementById('rv-imp-btn').style.display='none';
+    document.getElementById('rv-imp-footer').querySelector('.bgh').textContent='Cancel';
+    document.getElementById('rv-imp-footer').querySelector('.bgh').style.display='';
+    document.getElementById('rev-imp-filename').textContent='';
+    document.getElementById('rev-imp-file').value='';
+  },300);
+}
+
+// ════ EXCEL IMPORT (VOTE BOOK) ════
 let importData=[], importHeaders=[];
 
 function handleFileDrop(event){

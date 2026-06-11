@@ -927,6 +927,21 @@ code.ic{font-size:11px;background:var(--g100);padding:2px 5px;border-radius:4px;
   </div>
 </div>
 
+<!-- Universal Edit Modal -->
+<div class="mo" id="edit-modal">
+  <div class="md" style="width:640px">
+    <div class="mdh"><h3 id="edit-modal-title">Edit Entry</h3><button class="mdc" onclick="closeModal('edit-modal')">✕</button></div>
+    <div class="mdb">
+      <div id="edit-modal-fields"></div>
+    </div>
+    <div class="mdf">
+      <button class="btn bdr bsm" style="margin-right:auto" onclick="confirmDelEntry()">🗑 Delete</button>
+      <button class="btn bgh" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn bnn" onclick="saveEdit()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- Record Expenditure Modal -->
 <div class="mo" id="vm">
   <div class="md">
@@ -1425,7 +1440,10 @@ function renderVB(){
     <td>${e.desc}</td><td>${e.supplier||'—'}</td>
     <td><span class="badge ${sc}">${e.status}</span></td>
     <td class="num bold">${fmt(e.amount)}</td>
-    <td><button class="btn bdr bsm bic" title="Delete" onclick="if(confirm('Delete this entry? Cannot be undone.'))del('vote_entries','${e.id}',loadVB)">✕</button></td></tr>`;
+    <td style="white-space:nowrap">
+      <button class="btn bgh bsm bic" title="Edit" onclick="editEntry('vote_entries','${e.id}')">✏️</button>
+      <button class="btn bdr bsm bic" title="Delete" onclick="delEntry('vote_entries','${e.id}')">🗑</button>
+    </td></tr>`;
   }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">🗳️</div><p>No entries yet. Click "+ Record Expenditure" to add one.</p></div></td></tr>';
 }
 function autoFillVoteCode(){
@@ -1463,7 +1481,7 @@ function renderAcc(){
   document.getElementById('ac-tb').innerHTML=rows.length?rows.map(r=>{
     const sc={Draft:'bgr',Posted:'bg',Reversed:'br'}[r.status]||'bgr';
     return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td><span class="badge bb">${r.type}</span></td><td>${r.desc}</td><td>${r.debit||'—'}</td><td>${r.credit||'—'}</td><td>${r.period||'—'}</td><td><span class="badge ${sc}">${r.status}</span></td><td class="num">${fmt(r.amount)}</td>
-    <td><button class="btn bdr bsm bic" onclick="del('accruals','${r.id}',loadAcc)">✕</button></td></tr>`;
+    <td style="white-space:nowrap"><button class="btn bgh bsm bic" title="Edit" onclick="editEntry('accruals','${r.id}')">✏️</button> <button class="btn bdr bsm bic" title="Delete" onclick="delEntry('accruals','${r.id}')">🗑</button></td></tr>`;
   }).join(''):'<tr><td colspan="10"><div class="empty"><div class="ei">📋</div><p>No entries</p></div></td></tr>';
   document.getElementById('ac-tot').textContent=fmt(allAcc.filter(r=>r.status==='Posted').reduce((s,r)=>s+r.amount,0));
   const pay=allAcc.filter(r=>r.type==='Payable'&&r.status==='Posted').reduce((s,r)=>s+r.amount,0);
@@ -1493,7 +1511,10 @@ function renderRev(){
   document.getElementById('rv-tb').innerHTML=allRev.length?allRev.map(r=>`<tr>
     <td>${r.date}</td><td>${r.rcpt||'—'}</td><td><span class="badge bg">${r.stream}</span></td><td>${r.desc}</td><td>${r.payer||'—'}</td><td>${r.bank}</td>
     <td class="num" style="color:var(--green)">${fmt(r.amount)}</td>
-    <td><button class="btn bdr bsm bic" onclick="del('revenue','${r.id}',loadRev)">✕</button></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty"><div class="ei">💰</div><p>No revenue entries</p></div></td></tr>';
+    <td style="white-space:nowrap">
+      <button class="btn bgh bsm bic" title="Edit" onclick="editEntry('revenue','${r.id}')">✏️</button>
+      <button class="btn bdr bsm bic" title="Delete" onclick="delEntry('revenue','${r.id}')">🗑</button>
+    </td></tr>`).join(''):'<tr><td colspan="8"><div class="empty"><div class="ei">💰</div><p>No revenue entries</p></div></td></tr>';
   document.getElementById('rv-tot').textContent=fmt(allRev.reduce((s,r)=>s+r.amount,0));
   updateRevKPIs();
 }
@@ -1514,7 +1535,10 @@ function renderClm(){
     return`<tr><td>${r.date}</td><td>${r.ref||'—'}</td><td>${r.insurer}</td><td>${r.desc}</td>
     <td class="num">${fmt(r.claimed)}</td><td class="num">${r.approved?fmt(r.approved):'—'}</td><td class="num" style="color:var(--green)">${r.received?fmt(r.received):'—'}</td>
     <td><span class="badge ${sc}">${r.status}</span></td>
-    <td><button class="btn bdr bsm bic" onclick="del('claims','${r.id}',loadClm)">✕</button></td></tr>`;
+    <td style="white-space:nowrap">
+      <button class="btn bgh bsm bic" title="Edit" onclick="editEntry('claims','${r.id}')">✏️</button>
+      <button class="btn bdr bsm bic" title="Delete" onclick="delEntry('claims','${r.id}')">🗑</button>
+    </td></tr>`;
   }).join(''):'<tr><td colspan="9"><div class="empty"><div class="ei">📑</div><p>No claims</p></div></td></tr>';
   document.getElementById('cl-tc').textContent=fmt(rows.reduce((s,r)=>s+r.claimed,0));
   document.getElementById('cl-ta').textContent=fmt(rows.reduce((s,r)=>s+(r.approved||0),0));
@@ -1686,7 +1710,10 @@ function renderACB(){
       <td class="num" style="color:var(--green)">${r.type==='receipt'?fmt(r.amount):''}</td>
       <td class="num" style="color:var(--red)">${r.type==='payment'?fmt(r.amount):''}</td>
       <td class="num bold" style="color:${bal>=0?'var(--green)':'var(--red)'}">${fmt(bal)}</td>
-      <td><button class="btn bdr bsm bic" title="Delete" onclick="if(confirm('Delete this ACB entry? Cannot be undone.'))del('cashbook','${r.id}',loadACB)">✕</button></td>
+      <td style="white-space:nowrap">
+        <button class="btn bgh bsm bic" title="Edit" onclick="editEntry('cashbook','${r.id}')">✏️</button>
+        <button class="btn bdr bsm bic" title="Delete" onclick="delEntry('cashbook','${r.id}')">🗑</button>
+      </td>
     </tr>`;
   }).join(''):`<tr><td colspan="12"><div class="empty"><div class="ei">🏦</div><p>No entries for this period. Use the form above to post transactions.</p></div></td></tr>`;
 
@@ -2285,7 +2312,149 @@ function renderSupplierReport(){
   document.getElementById('oc-tot').textContent=fmt(outstanding_entries.reduce((s,e)=>s+e.amount,0));
 }
 
-// ════ REVENUE EXCEL IMPORT ════
+// ════ EDIT & DELETE ════
+let editCollection='', editDocId='', editData={};
+
+async function editEntry(collection, id){
+  // Fetch the document
+  try{
+    const doc=await db.collection(collection).doc(id).get();
+    if(!doc.exists){toast('Entry not found.','error');return;}
+    editCollection=collection; editDocId=id; editData={...doc.data()};
+    const titles={cashbook:'Edit ACB Entry',vote_entries:'Edit Expenditure Entry',revenue:'Edit Revenue Entry',claims:'Edit Claim Entry',accruals:'Edit Accrual Entry'};
+    document.getElementById('edit-modal-title').textContent=titles[collection]||'Edit Entry';
+    document.getElementById('edit-modal-fields').innerHTML=buildEditForm(collection, editData);
+    openModal('edit-modal');
+  }catch(e){toast('Error loading entry: '+e.message,'error');}
+}
+
+function buildEditForm(col, d){
+  const fr=(label,id,type='text',val='',extra='')=>`<div class="fr" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--g700);display:block;margin-bottom:4px">${label}</label><input type="${type}" id="ef-${id}" value="${String(val||'').replace(/"/g,'&quot;')}" ${extra} style="width:100%;padding:8px 10px;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;outline:none"/></div>`;
+  const fs=(label,id,opts,val='')=>`<div class="fr" style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--g700);display:block;margin-bottom:4px">${label}</label><select id="ef-${id}" style="width:100%;padding:8px 10px;border:1.5px solid var(--g300);border-radius:var(--r);font-size:13px;outline:none">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;
+
+  if(col==='cashbook') return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Date','date','date',d.date)}
+      ${fr('Reference No.','ref','text',d.ref)}
+    </div>
+    ${fs('Transaction Type','type',['receipt','payment'],d.type)}
+    ${fr('Description','desc','text',d.desc)}
+    ${fr('IFMIS Vote Code','ifmis','text',d.ifmis)}
+    ${fr('Vote / Category','vote','text',d.vote)}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Amount (KES)','amount','number',d.amount)}
+      ${fs('Bank / Fund','bank',['KCB Main Account','FIF Account','NHIF/SHA Account','Petty Cash'],d.bank)}
+    </div>
+    ${fr('Payee / Payer','payee','text',d.payee||'')}
+    ${fr('Cheque / EFT / PV Ref.','cheque','text',d.cheque||'')}
+    ${fr('Remarks','remarks','text',d.remarks||'')}`;
+
+  if(col==='vote_entries') return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Date','date','date',d.date)}
+      ${fr('LPO / LSO / Voucher No.','ref','text',d.ref)}
+    </div>
+    ${fr('Vote Item','vote','text',d.vote)}
+    ${fr('IFMIS Code','ifmis','text',d.ifmis||'')}
+    ${fr('Description','desc','text',d.desc)}
+    ${fr('Supplier / Payee','supplier','text',d.supplier||'')}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Amount (KES)','amount','number',d.amount)}
+      ${fs('Payment Status','status',['Committed','Accrued','Paid'],d.status)}
+    </div>`;
+
+  if(col==='revenue') return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Date','date','date',d.date)}
+      ${fr('Receipt No.','rcpt','text',d.rcpt||'')}
+    </div>
+    ${fs('Revenue Stream','stream',['OPD','IPD','Lab','Pharmacy','Radiology','Maternity','Theatre','NHIF/SHA','Insurance','FIF','DANIDA','County Transfer','Other'],d.stream)}
+    ${fr('Description','desc','text',d.desc||'')}
+    ${fr('Payer / Patient Group','payer','text',d.payer||'')}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Amount (KES)','amount','number',d.amount)}
+      ${fs('Collected To','bank',['KCB Main Account','FIF Account','NHIF/SHA Account','Petty Cash'],d.bank)}
+    </div>`;
+
+  if(col==='claims') return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Date Submitted','date','date',d.date)}
+      ${fr('Claim Reference No.','ref','text',d.ref||'')}
+    </div>
+    ${fs('Insurer / Scheme','insurer',['NHIF','SHA (Social Health Authority)','Jubilee Health','AAR','CIC','Resolution Health','Other'],d.insurer)}
+    ${fr('Patient / Batch Description','desc','text',d.desc||'')}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      ${fr('Claimed (KES)','claimed','number',d.claimed||0)}
+      ${fr('Approved (KES)','approved','number',d.approved||0)}
+      ${fr('Received (KES)','received','number',d.received||0)}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Expected Date','expectDate','date',d.expectDate||'')}
+      ${fr('Date Received','receivedDate','date',d.receivedDate||'')}
+    </div>
+    ${fs('Status','status',['Submitted','Approved','Partial','Paid','Rejected','Disputed'],d.status)}`;
+
+  if(col==='accruals') return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Date','date','date',d.date)}
+      ${fr('Journal Reference','ref','text',d.ref||'')}
+    </div>
+    ${fs('Type','type',['Payable','Receivable','Prepayment','Depreciation','Adjustment'],d.type)}
+    ${fr('Description','desc','text',d.desc||'')}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Debit Account','debit','text',d.debit||'')}
+      ${fr('Credit Account','credit','text',d.credit||'')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${fr('Amount (KES)','amount','number',d.amount||0)}
+      ${fr('Period','period','text',d.period||'')}
+    </div>
+    ${fs('Status','status',['Draft','Posted','Reversed'],d.status)}`;
+
+  return '<p style="color:var(--g500);font-size:13px">No editable fields found.</p>';
+}
+
+async function saveEdit(){
+  const col=editCollection;
+  const g=id=>document.getElementById('ef-'+id)?.value||'';
+  let updates={};
+  if(col==='cashbook') updates={date:g('date'),ref:g('ref'),type:g('type'),desc:g('desc'),ifmis:g('ifmis'),vote:g('vote'),amount:parseFloat(g('amount'))||0,bank:g('bank'),payee:g('payee'),cheque:g('cheque'),remarks:g('remarks')};
+  else if(col==='vote_entries') updates={date:g('date'),ref:g('ref'),vote:g('vote'),ifmis:g('ifmis'),desc:g('desc'),supplier:g('supplier'),amount:parseFloat(g('amount'))||0,status:g('status')};
+  else if(col==='revenue') updates={date:g('date'),rcpt:g('rcpt'),stream:g('stream'),desc:g('desc'),payer:g('payer'),amount:parseFloat(g('amount'))||0,bank:g('bank')};
+  else if(col==='claims') updates={date:g('date'),ref:g('ref'),insurer:g('insurer'),desc:g('desc'),claimed:parseFloat(g('claimed'))||0,approved:parseFloat(g('approved'))||0,received:parseFloat(g('received'))||0,expectDate:g('expectDate'),receivedDate:g('receivedDate'),status:g('status')};
+  else if(col==='accruals') updates={date:g('date'),ref:g('ref'),type:g('type'),desc:g('desc'),debit:g('debit'),credit:g('credit'),amount:parseFloat(g('amount'))||0,period:g('period'),status:g('status')};
+  updates.updatedBy=userProfile.name;
+  updates.updatedAt=new Date().toISOString();
+  try{
+    await db.collection(col).doc(editDocId).update(updates);
+    toast('✅ Entry updated!','success');
+    closeModal('edit-modal');
+    // Refresh relevant module
+    const reloaders={cashbook:()=>{},vote_entries:loadVB,revenue:loadRev,claims:loadClm,accruals:loadAcc};
+    reloaders[col]?.();
+  }catch(e){toast('Error saving: '+e.message,'error');}
+}
+
+async function confirmDelEntry(){
+  if(!confirm(`Delete this entry from ${editCollection}? This cannot be undone.`))return;
+  try{
+    await db.collection(editCollection).doc(editDocId).delete();
+    toast('Entry deleted.','success');
+    closeModal('edit-modal');
+    const reloaders={cashbook:()=>{},vote_entries:loadVB,revenue:loadRev,claims:loadClm,accruals:loadAcc};
+    reloaders[editCollection]?.();
+  }catch(e){toast('Error deleting: '+e.message,'error');}
+}
+
+async function delEntry(collection, id){
+  if(!confirm('Delete this entry? This cannot be undone.'))return;
+  try{
+    await db.collection(collection).doc(id).delete();
+    toast('Entry deleted.','success');
+    const reloaders={cashbook:()=>{},vote_entries:loadVB,revenue:loadRev,claims:loadClm,accruals:loadAcc};
+    reloaders[collection]?.();
+  }catch(e){toast('Error deleting: '+e.message,'error');}
+}
 let revImportData=[], revImportHeaders=[];
 
 function handleRevFileDrop(e){
